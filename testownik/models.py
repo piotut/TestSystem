@@ -1,8 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Teacher(User):
-    pass
+
+class Teacher(models.Model):
+    user = models.OneToOneField(User)
+
+    def __unicode__(self):
+        return "{}".format(self.user.username)
 
 
 class Student(models.Model):
