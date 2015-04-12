@@ -1,3 +1,5 @@
+from TestSystem.settings import MEDIA_DIR
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -7,7 +9,9 @@ from django.views.generic import View, DetailView, ListView
 
 from testownik.models import Student, Sheet, SheetQuestions
 
-from forms import LoginForm, StudentForm
+from forms import LoginForm, StudentForm, UploadFileForm
+
+import os
 
 
 class IndexView(View):
@@ -68,3 +72,33 @@ class SheetView(View):
     '''
     def get(self, request, *args):
         return HttpResponse('Arkusz dla: '+args[0]+' o ID: '+args[1])
+
+
+class UploadFileView(View):
+    '''
+    Widok do importu plikow na serwer.
+    '''
+    template_name = 'testownik/upload.html'
+
+    def handle_uploaded_file(self, fileh):
+        filename = os.path.join(MEDIA_DIR, 'test_id', str(fileh))
+        dir = os.path.dirname(filename)
+
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        with open(filename, 'wb+') as destination:
+            for chunk in fileh.chunks():
+                destination.write(chunk)
+
+    def post(self, request):
+        form = UploadFileForm(request.POST, request.FILES)
+        print request.FILES
+        if form.is_valid():
+            self.handle_uploaded_file(request.FILES['file'])
+            return HttpResponse('zaladowano plik')
+        return HttpResponse('wystapil blad')
+
+    def get(self, request):
+        form = UploadFileForm()
+        return render(request, self.template_name, {'form': form})
