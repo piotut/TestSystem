@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 
-from django.views.generic import View, DetailView
+from django.views.generic import View, DetailView, ListView
 
-from testownik.models import Student, Sheet
+from testownik.models import Student, Sheet, SheetQuestions
 
-from forms import LoginForm
+from forms import LoginForm, StudentForm
 
 
 class IndexView(View):
@@ -15,20 +16,28 @@ class IndexView(View):
     '''
     template_name = 'testownik/index.html'
 
+    def post(self, request):
+        form = StudentForm(request.POST)
+
+        if form.is_valid():
+            index = form.cleaned_data['index']
+            return HttpResponseRedirect(reverse('choose_test', args=[index]))
+
     def get(self, request):
-        return render(request, self.template_name)
+        form = StudentForm()
+        return render(request, self.template_name, {'form': form})
 
 
-class ChooseTestView(DetailView):
+class ChooseTestView(ListView):
     '''
-    Strona z wyborem testu sposrod dostepnych dla uzytkownika
+    Strona z wyborem testu sposrod dostepnych dla uzytkownika.
     '''
     template_name = 'testownik/choose_test.html'
-    queryset = Sheet.objects.filter(student_id=1)
     context_object_name = 'sheet_list'
 
-    def get(self, request):
-        return render(request, self.template_name)
+    def get_queryset(self):
+        return Sheet.objects.filter(student_id__index_number=self.args[0])
+
 
 class LoginView(View):
     '''
@@ -38,13 +47,10 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            print form.cleaned_data['username']
-            print form.cleaned_data['password']
             user = authenticate(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password']
                 )
-            print user
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -54,3 +60,11 @@ class LoginView(View):
     def get(self, request):
         form = LoginForm()
         return render(request, self.template_name, {'form': form})
+
+
+class SheetView(View):
+    '''
+    Formularz do wysietlania gotowego arkusza.
+    '''
+    def get(self, request, *args):
+        return HttpResponse('Arkusz dla: '+args[0]+' o ID: '+args[1])

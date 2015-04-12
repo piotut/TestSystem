@@ -8,4 +8,11 @@ Tutaj beda dwa przyciski:
 - rozpocznij test
 - zaloguj jako prowadzacy
 
+
+<form action="{% url 'index' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Przystap do testu"/>
+</form>
+
 {% endblock content %}

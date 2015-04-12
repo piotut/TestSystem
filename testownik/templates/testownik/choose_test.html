@@ -1,1 +1,13 @@
-lista testow
+{% extends "testownik/base.html" %}
+
+{% block content %}
+	<h2>{{ sheet_list.0.student_id.index_number}}</h2>
+	{{ sheet_list.0.student_id.first_name}}
+	{{ sheet_list.0.student_id.last_name}}
+    <h2>Dostepne arkusze</h2>
+    <ul>
+        {% for sheet in sheet_list %}
+            <li><a href="{% url 'sheet' sheet.student_id.index_number sheet.id %}">id:{{ sheet.id }}; autor:{{ sheet.test_id.author_id.user.username }}</a>
+        {% endfor %}
+    </ul>
+{% endblock %}
