@@ -7,7 +7,11 @@
     <h2>Dostepne arkusze</h2>
     <ul>
         {% for sheet in sheet_list %}
+       		{% if sheet.is_active %}
             <li><a href="{% url 'sheet' sheet.student_id.index_number sheet.id %}">id:{{ sheet.id }}; autor:{{ sheet.test_id.author_id.user.username }}</a>
+            {% else %}
+            	Test nieaktywy (data wygasła!)
+            {% endif %}
         {% endfor %}
     </ul>
-{% endblock %}
+{% endblock content %}

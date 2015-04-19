@@ -7,8 +7,9 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.generic import View, DetailView, ListView
 
-from testownik.models import Student, Sheet, SheetQuestions
+from models import Student, Sheet, SheetQuestions
 
+from forms import UserCreationForm
 from forms import LoginForm, StudentForm, UploadFileForm
 
 import os
@@ -102,3 +103,24 @@ class UploadFileView(View):
     def get(self, request):
         form = UploadFileForm()
         return render(request, self.template_name, {'form': form})
+
+
+class UserCreationView(View):
+    '''
+    Formularz do logowania
+    '''
+    template_name = 'testownik/create_user.html'
+    def post(self, request):
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            print user.username
+            return HttpResponse('udalo sie zarejestrowac')
+
+        return HttpResponse('nie udalo sie zarejestrowac')
+
+    def get(self, request):
+        form = UserCreationForm()
+        return render(request, self.template_name, {'form': form})
+
+

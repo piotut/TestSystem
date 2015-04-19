@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
-class Teacher(models.Model):
+class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    is_teacher = models.BooleanField(default=False)
+    is_supervisor = models.BooleanField(default=False)
 
     def __unicode__(self):
         return "{}".format(self.user.username)
@@ -28,14 +31,21 @@ class Question(models.Model):
 
 
 class Test(models.Model):
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    author_id = models.ForeignKey(Teacher)
+    name = models.CharField(max_length=100)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    author_id = models.ForeignKey(UserProfile)
+
+    def __unicode__(self):
+        return "{} ({}-{}),{}".format(self.name, self.start_time, self.end_time, self.author_id)
 
 
 class Sheet(models.Model):
     test_id = models.ForeignKey(Test)
     student_id = models.ForeignKey(Student)
+
+    def is_active(self):
+        return self.test_id.end_time > timezone.now() > self.test_id.start_time
 
 
 class Results(models.Model):
