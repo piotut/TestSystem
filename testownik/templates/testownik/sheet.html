@@ -1,0 +1,8 @@
+{% extends "testownik/base.html" %}
+{% block content %}
+<div id="pdf">
+    <object width="80%" height="800" type="application/pdf" data="/pdf/{{ nr_index }}/{{ id }}" id="pdf_content">
+    <p>Insert your error message here, if the PDF cannot be displayed.</p>
+    </object>
+</div>
+{% endblock content %}

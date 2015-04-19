@@ -67,12 +67,27 @@ class LoginView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class SheetView(View):
+class PdfGeneratorView(View):
     '''
-    Formularz do wysietlania gotowego arkusza.
+    Widok do wyswietlania pliku pdf.
     '''
     def get(self, request, *args):
-        return HttpResponse('Arkusz dla: '+args[0]+' o ID: '+args[1])
+        fileh = 'zestaw8.pdf'
+        filename = os.path.join(MEDIA_DIR, 'test_id', str(fileh))
+        with open(filename, 'r') as pdf:
+            response = HttpResponse(pdf.read(), content_type='application/pdf')
+            response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+            return response
+
+
+class SheetView(View):
+    '''
+    Widok do wysietlania gotowego arkusza.
+    '''
+    template_name = 'testownik/sheet.html'
+      
+    def get(self, request, *args):
+        return render(request, self.template_name, {'nr_index': args[0], 'id': args[1]})
 
 
 class UploadFileView(View):
