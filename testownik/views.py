@@ -59,7 +59,8 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponse('brawo')
+                    redirect_to = request.POST.get('next', '')
+                    return HttpResponseRedirect(redirect_to)
         return HttpResponse('nie udalo sie zalogowac')
 
     def get(self, request):
