@@ -131,7 +131,7 @@ class UserCreationView(View):
         if form.is_valid():
             user = form.save()
             print user.username
-            return HttpResponse('udalo sie zarejestrowac')
+            return HttpResponseRedirect("/")
 
         return HttpResponse('nie udalo sie zarejestrowac')
 
