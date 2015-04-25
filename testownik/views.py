@@ -60,7 +60,8 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponse('brawo')
+                    redirect_to = request.POST.get('next', '')
+                    return HttpResponseRedirect(redirect_to)
         return HttpResponse('nie udalo sie zalogowac')
 
     def get(self, request):
@@ -135,8 +136,14 @@ class UserCreationView(View):
         if form.is_valid():
             user = form.save()
             print user.username
-            return HttpResponse('udalo sie zarejestrowac')
-
+            user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1']
+                )
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect("/")
         return HttpResponse('nie udalo sie zarejestrowac')
 
     def get(self, request):
