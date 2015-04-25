@@ -1,6 +1,7 @@
 from django import forms
 from models import UserProfile
 from django.contrib.auth.models import User
+from django.forms.formsets import BaseFormSet
 
 
 class LoginForm(forms.Form):
@@ -54,3 +55,14 @@ class UserCreationForm(forms.Form):
         )
         user_profile.save()
         return user
+
+class AnswersForm(forms.Form):
+    CHOICES = (('teacher', 'Prowadzacy',), ('supervisor', 'Nadzorca',))
+    choice_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES, required=True, label='pytanie')
+
+class AnswersFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        super(AnswersFormSet, self).__init__(*args, **kwargs)
+        no_of_forms = len(self)
+        for i in range(0, no_of_forms):
+            self[i].fields['choice_field'].label += "-%d" % (i + 1)

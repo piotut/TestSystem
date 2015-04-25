@@ -10,7 +10,8 @@ from django.views.generic import View, DetailView, ListView
 from models import Student, Sheet, SheetQuestions
 
 from forms import UserCreationForm
-from forms import LoginForm, StudentForm, UploadFileForm
+from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
+from django.forms.formsets import formset_factory
 
 import os
 
@@ -87,7 +88,11 @@ class SheetView(View):
     template_name = 'testownik/sheet.html'
       
     def get(self, request, *args):
-        return render(request, self.template_name, {'nr_index': args[0], 'id': args[1]})
+        AnswerForm = formset_factory(AnswersForm, extra=5, formset=AnswersFormSet)
+        formset = AnswerForm()
+        for f in formset:
+            print f.as_table()
+        return render(request, self.template_name, {'nr_index': args[0], 'id': args[1], 'formset': formset})
 
 
 class UploadFileView(View):

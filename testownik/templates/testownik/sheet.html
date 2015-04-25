@@ -5,4 +5,11 @@
     <p>Insert your error message here, if the PDF cannot be displayed.</p>
     </object>
 </div>
+<div>
+    <table>
+        {% for form in formset %}
+        {{ form }}
+        {% endfor %}
+    </table>
+</div>
 {% endblock content %}
