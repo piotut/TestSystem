@@ -6,10 +6,11 @@
     </object>
 </div>
 <div>
-    <table>
-        {% for form in formset %}
-        {{ form }}
-        {% endfor %}
-    </table>
+<form action="{% url 'sheet' 13538 1 %}" method="post">
+    {% csrf_token %}
+{{ formset.as_p }} 
+{{ formset.management_form }}
+    <input type="submit" value="Zapisz"/>
+</form>
 </div>
 {% endblock content %}

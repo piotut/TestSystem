@@ -14,6 +14,7 @@ from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFo
 from django.forms.formsets import formset_factory
 
 import os
+from functools import partial, wraps
 
 
 class IndexView(View):
@@ -60,7 +61,8 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponse('brawo')
+                    redirect_to = request.POST.get('next', '')
+                    return HttpResponseRedirect(redirect_to)
         return HttpResponse('nie udalo sie zalogowac')
 
     def get(self, request):
@@ -86,13 +88,19 @@ class SheetView(View):
     Widok do wysietlania gotowego arkusza.
     '''
     template_name = 'testownik/sheet.html'
-      
+    AnswerForm = formset_factory(wraps(AnswersForm)(partial(AnswersForm, 3)), extra=3, formset=AnswersFormSet)
+    
     def get(self, request, *args):
-        AnswerForm = formset_factory(AnswersForm, extra=5, formset=AnswersFormSet)
-        formset = AnswerForm()
-        for f in formset:
-            print f.as_table()
+        formset = self.AnswerForm()
         return render(request, self.template_name, {'nr_index': args[0], 'id': args[1], 'formset': formset})
+
+    def post(self, request, *args):
+        formset = self.AnswerForm(request.POST, request.FILES)
+        if formset.is_valid():
+            print formset.cleaned_data
+            return HttpResponse('Poprawnie wypelniona forma')
+        print formset.errors
+        return HttpResponse('Blednie wypelniona forma')
 
 
 class UploadFileView(View):
@@ -135,8 +143,14 @@ class UserCreationView(View):
         if form.is_valid():
             user = form.save()
             print user.username
-            return HttpResponse('udalo sie zarejestrowac')
-
+            user = authenticate(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1']
+                )
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect("/")
         return HttpResponse('nie udalo sie zarejestrowac')
 
     def get(self, request):

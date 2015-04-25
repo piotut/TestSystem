@@ -56,13 +56,20 @@ class UserCreationForm(forms.Form):
         user_profile.save()
         return user
 
+
 class AnswersForm(forms.Form):
-    CHOICES = (('teacher', 'Prowadzacy',), ('supervisor', 'Nadzorca',))
-    choice_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES, required=True, label='pytanie')
+    CHOICES = (('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E'), ('f', 'F'))
+    def __init__(self, answers_no, *args,**kwargs):
+        super(AnswersForm, self).__init__(*args,**kwargs)
+        self.fields['choice_field'] = forms.MultipleChoiceField(
+            widget=forms.CheckboxSelectMultiple, choices=self.CHOICES, required=True, label='Pytanie')
+
 
 class AnswersFormSet(BaseFormSet):
     def __init__(self, *args, **kwargs):
         super(AnswersFormSet, self).__init__(*args, **kwargs)
-        no_of_forms = len(self)
-        for i in range(0, no_of_forms):
-            self[i].fields['choice_field'].label += "-%d" % (i + 1)
+        CHOICES = (('a', 'A',), ('b', 'B',), ('c', 'C',), ('d', 'D',), ('e', 'E',), ('f', 'F',))
+        print 'formset'
+        for i in range(0, 3):
+            self[i].fields['choice_field'].label += " {}".format(i + 1)
+            self[i].fields['choice_field'].choices = CHOICES
