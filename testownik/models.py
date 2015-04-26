@@ -43,6 +43,7 @@ class Test(models.Model):
 class Sheet(models.Model):
     test_id = models.ForeignKey(Test)
     student_id = models.ForeignKey(Student)
+    sheet_number = models.SmallIntegerField()
 
     def is_active(self):
         return self.test_id.end_time > timezone.now() > self.test_id.start_time
