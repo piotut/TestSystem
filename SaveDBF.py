@@ -9,6 +9,8 @@ def save_students(path):
     db = dbf.Dbf(path)
     for record in db:
         index_number = int(record['NR_ALBUMU'])
+        if index_number == 0:
+            continue
         student_exists = Student.objects.filter(index_number=index_number).count()
         if not student_exists:
             first_name = record['IMIE'].decode('windows-1250')
