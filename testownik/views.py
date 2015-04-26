@@ -18,6 +18,8 @@ from django.forms.formsets import formset_factory
 import os
 import fnmatch
 
+from SaveDBF import save_students
+
 class IndexView(View):
     '''
     Strona glowna
@@ -125,6 +127,9 @@ class UploadFileView(View):
 
         os.system('mv --force '+ matchDir +'/* ' +dir)
 
+        testy_dbf = os.path.join(MEDIA_DIR, str(testId), "testy.dbf")
+        save_students(testy_dbf)
+
     def get(self, request):
         form = UploadFileForm()
         return render(request, self.template_name, {'form': form})
@@ -146,9 +151,6 @@ class UploadFileView(View):
             return HttpResponse('zaladowano plik')
         print form.errors
         return HttpResponse('wystapil blad')
-
-
-
 
 class UserCreationView(View):
     '''
