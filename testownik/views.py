@@ -51,8 +51,7 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    redirect_to = request.POST.get('next', '')
-                    return HttpResponseRedirect(redirect_to)
+                    return HttpResponseRedirect(reverse('upload'))
         return HttpResponse('Nie udalo sie zalogowac')
 
     def get(self, request):
