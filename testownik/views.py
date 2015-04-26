@@ -15,6 +15,8 @@ from forms import UserCreationForm
 from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
 from django.forms.formsets import formset_factory
 
+from datetime import datetime
+from re import match
 import os
 import fnmatch
 
@@ -109,7 +111,7 @@ class UploadFileView(View):
     template_name = 'testownik/upload.html'
 
     def handle_uploaded_file(self, testId, fileh):
-        filename = os.path.join(MEDIA_DIR, str(testId), str(fileh))
+        filename = "\'"+os.path.join(MEDIA_DIR, str(testId), str(fileh))+"\'"
         dir = os.path.dirname(filename)
 
         if not os.path.exists(dir):
@@ -123,9 +125,15 @@ class UploadFileView(View):
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):
-                matchDir= root
+                matchDir = root
 
         os.system('mv --force '+ matchDir +'/* ' +dir)
+
+    def convert_time(self, time):
+        regex = '([0-9]){4}/([0-9]){2}/([0-9]){2} ([0-9]){2}:([0-9]){2}'
+        m = match(regex, time).groups()
+        return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
+
 
     def get(self, request):
         form = UploadFileForm()
@@ -135,15 +143,17 @@ class UploadFileView(View):
         form = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
+            print form.cleaned_data['start']
             test = Test(
                 name=form.cleaned_data['name'],
-                start_time = timezone.now(),#form.cleaned_data['start'],
-                end_time = timezone.now(),#form.cleaned_data['end'],
+                start_time = self.convert_time(form.cleaned_data['start']),
+                end_time = self.convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id)
                 )
             test.save()
+            print 'test save przeszlo'
             self.handle_uploaded_file(test.id, request.FILES['file'])
-            return HttpResponse('zaladowano plik')
+            return HttpResponse('zaladowano plik')''
         print form.errors
         return HttpResponse('wystapil blad')
 
