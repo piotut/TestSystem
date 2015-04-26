@@ -1,0 +1,25 @@
+<!--
+Developer    : Jyothis
+Email ID     : sastrijajyothis@gmail.com
+License Type : GPL (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<html>
+    <head>
+        <title>jCalendar</title>
+        <link href="jCalendar.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="jCalendar.js"></script>
+    </head>
+    <body>
+        <div style="vertical-align: middle;">
+            <table>
+                <tr>
+                    <td><input type="text" value="TEST" class="jc_date" id="jc_date"/></td>
+                    <td>
+                        <img onclick="viewCalendar('jcalendar_parent', 'jc_date')" style="margin-top: 5px;" width="20" height="20" src="images/calendar-32x32.png" alt="CAL" border="0">
+                        <div id="jcalendar_parent" class="jcalendar_parent" style="z-index: 999"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
