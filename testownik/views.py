@@ -14,8 +14,8 @@ from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFo
 from django.forms.formsets import formset_factory
 
 import os
+import fnmatch
 from functools import partial, wraps
-
 
 class IndexView(View):
     '''
@@ -115,6 +115,14 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
+        os.system('unzip -o '+ filename +' -d '+dir+'/')
+        os.system('rm ' + filename)
+
+        for root, dirnames, filenames in os.walk(dir):
+            for filename in fnmatch.filter(filenames, 'testy.dbf'):
+                matchDir= root
+
+        os.system('mv --force '+ matchDir +'/* ' +dir)
 
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
