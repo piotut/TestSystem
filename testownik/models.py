@@ -22,12 +22,12 @@ class Student(models.Model):
 
 
 class Question(models.Model):
-    a_points = models.SmallIntegerField()
-    b_points = models.SmallIntegerField()
-    c_points = models.SmallIntegerField()
-    d_points = models.SmallIntegerField()
-    e_points = models.SmallIntegerField()
-    f_points = models.SmallIntegerField()
+    a_points = models.SmallIntegerField(null=True)
+    b_points = models.SmallIntegerField(null=True)
+    c_points = models.SmallIntegerField(null=True)
+    d_points = models.SmallIntegerField(null=True)
+    e_points = models.SmallIntegerField(null=True)
+    f_points = models.SmallIntegerField(null=True)
 
 
 class Test(models.Model):
