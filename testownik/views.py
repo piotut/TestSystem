@@ -64,12 +64,15 @@ class PdfGeneratorView(View):
     Widok do wyswietlania pliku pdf.
     '''
     def get(self, request, *args):
-        fileh = 'zestaw8.pdf'
-        filename = os.path.join(MEDIA_DIR, 'test_id', str(fileh))
+        test, sheet_number = Sheet.objects.get_test_and_sheet_number(13538)
+        fileh = 'testy_pdf/zestaw{}.pdf'.format(sheet_number)
+        filename = os.path.join(MEDIA_DIR, str(test.id), str(fileh))
+
         with open(filename, 'r') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=some_file.pdf'
             return response
+
 
 class SheetView(View):
     '''
@@ -93,7 +96,6 @@ class SheetView(View):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
         formset = AnswerForm(0, request.POST, request.FILES)
         if formset.is_valid():
-            print formset.cleaned_data
             return HttpResponse('Poprawnie wypelniona forma')
         print formset.errors
         return HttpResponse('Blednie wypelniona forma')
@@ -131,10 +133,8 @@ class UploadFileView(View):
 
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
-        print request.FILES
 
         if form.is_valid():
-            print 'user {}'.format(request.user.id)
             test = Test(
                 name=form.cleaned_data['name'],
                 start_time = timezone.now(),#form.cleaned_data['start'],
@@ -159,7 +159,6 @@ class UserCreationView(View):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            print user.username
             user = authenticate(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password1']

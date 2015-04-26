@@ -73,7 +73,6 @@ class AnswersForm(forms.Form):
 class AnswersFormSet(BaseFormSet):
     def __init__(self, sheet_id, *args, **kwargs):
         self.sheet_id = sheet_id
-        print sheet_id
 
         super(AnswersFormSet, self).__init__(*args, **kwargs)
         CHOICES = (('a', 'A',), ('b', 'B',), ('c', 'C',), ('d', 'D',), ('e', 'E',), ('f', 'F',))

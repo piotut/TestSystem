@@ -52,6 +52,16 @@ class Test(models.Model):
         verbose_name_plural = "Testy"
 
 
+class SheetManager(models.Manager):
+
+    def get_test_and_sheet_number(self, student_index):
+        '''zwraca obiekt testu oraz numer arkusza w danym teście'''
+        query = self.filter(student_id__index_number=student_index)
+        for qs in query:
+            if qs.is_active():
+                return qs.test_id, qs.sheet_number
+
+
 class Sheet(models.Model):
     test_id = models.ForeignKey(Test)
     student_id = models.ForeignKey(Student)
@@ -62,6 +72,8 @@ class Sheet(models.Model):
 
     def is_active(self):
         return self.test_id.end_time > timezone.now() > self.test_id.start_time
+
+    objects = SheetManager()
 
     class Meta:
         verbose_name = "Arkusz"
