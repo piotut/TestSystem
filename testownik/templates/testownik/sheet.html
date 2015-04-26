@@ -5,4 +5,12 @@
     <p>Insert your error message here, if the PDF cannot be displayed.</p>
     </object>
 </div>
+<div>
+<form action="{% url 'sheet' nr_index %}" method="post">
+    {% csrf_token %}
+{{ formset.as_table }} 
+{{ formset.management_form }}
+    <input type="submit" value="Zapisz"/>
+</form>
+</div>
 {% endblock content %}

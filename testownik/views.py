@@ -10,9 +10,11 @@ from django.views.generic import View, DetailView, ListView
 from models import Student, Sheet, SheetQuestions
 
 from forms import UserCreationForm
-from forms import LoginForm, StudentForm, UploadFileForm
+from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
+from django.forms.formsets import formset_factory
 
 import os
+from functools import partial, wraps
 
 
 class IndexView(View):
@@ -26,22 +28,11 @@ class IndexView(View):
 
         if form.is_valid():
             index = form.cleaned_data['index']
-            return HttpResponseRedirect(reverse('choose_test', args=[index]))
+            return HttpResponseRedirect(reverse('sheet', args=[index]))
 
     def get(self, request):
         form = StudentForm()
         return render(request, self.template_name, {'form': form})
-
-
-class ChooseTestView(ListView):
-    '''
-    Strona z wyborem testu sposrod dostepnych dla uzytkownika.
-    '''
-    template_name = 'testownik/choose_test.html'
-    context_object_name = 'sheet_list'
-
-    def get_queryset(self):
-        return Sheet.objects.filter(student_id__index_number=self.args[0])
 
 
 class LoginView(View):
@@ -61,7 +52,7 @@ class LoginView(View):
                     login(request, user)
                     redirect_to = request.POST.get('next', '')
                     return HttpResponseRedirect(redirect_to)
-        return HttpResponse('nie udalo sie zalogowac')
+        return HttpResponse('Nie udalo sie zalogowac')
 
     def get(self, request):
         form = LoginForm()
@@ -80,15 +71,32 @@ class PdfGeneratorView(View):
             response['Content-Disposition'] = 'inline;filename=some_file.pdf'
             return response
 
-
 class SheetView(View):
     '''
-    Widok do wysietlania gotowego arkusza.
+    Widok do wysietlania gotowego arkusza. Arkusz musi byc aktywny.
     '''
     template_name = 'testownik/sheet.html'
-      
+    
     def get(self, request, *args):
-        return render(request, self.template_name, {'nr_index': args[0], 'id': args[1]})
+        sheet_list = Sheet.objects.filter(student_id__index_number=self.args[0])
+        sheet_id = 0
+        for sheet in sheet_list:
+            if sheet.is_active():
+                sheet_id = sheet.id
+                questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
+                AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
+                formset = AnswerForm(sheet_id)
+                return render(request, self.template_name, {'nr_index': args[0], 'id': sheet_id, 'formset': formset})
+        return HttpResponse('Brak aktywnego testu')
+
+    def post(self, request, *args):
+        AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
+        formset = AnswerForm(0, request.POST, request.FILES)
+        if formset.is_valid():
+            print formset.cleaned_data
+            return HttpResponse('Poprawnie wypelniona forma')
+        print formset.errors
+        return HttpResponse('Blednie wypelniona forma')
 
 
 class UploadFileView(View):
@@ -144,5 +152,3 @@ class UserCreationView(View):
     def get(self, request):
         form = UserCreationForm()
         return render(request, self.template_name, {'form': form})
-
-
