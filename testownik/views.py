@@ -14,8 +14,8 @@ from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFo
 from django.forms.formsets import formset_factory
 
 import os
+import fnmatch
 from functools import partial, wraps
-
 
 class IndexView(View):
     '''
@@ -102,6 +102,7 @@ class SheetView(View):
 class UploadFileView(View):
     '''
     Widok do importu plikow na serwer.
+    url /upload
     '''
     template_name = 'testownik/upload.html'
 
@@ -115,18 +116,30 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
+        os.system('unzip -o '+ filename +' -d '+dir+'/')
+        os.system('rm ' + filename)
 
-    def post(self, request):
-        form = UploadFileForm(request.POST, request.FILES)
-        print request.FILES
-        if form.is_valid():
-            self.handle_uploaded_file(request.FILES['file'])
-            return HttpResponse('zaladowano plik')
-        return HttpResponse('wystapil blad')
+        for root, dirnames, filenames in os.walk(dir):
+            for filename in fnmatch.filter(filenames, 'testy.dbf'):
+                matchDir= root
+
+        os.system('mv --force '+ matchDir +'/* ' +dir)
 
     def get(self, request):
         form = UploadFileForm()
         return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = UploadFileForm(request.POST, request.FILES)
+        print request.FILES
+
+        if form.is_valid():
+            self.handle_uploaded_file(request.FILES['file'])
+            return HttpResponse('zaladowano plik')
+        print form.errors
+        return HttpResponse('wystapil blad')
+
+
 
 
 class UserCreationView(View):
