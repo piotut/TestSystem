@@ -3,6 +3,7 @@ from models import UserProfile
 from django.contrib.auth.models import User
 from django.forms.formsets import BaseFormSet
 
+from models import SheetQuestions, Question
 
 class LoginForm(forms.Form):
     '''
@@ -59,17 +60,21 @@ class UserCreationForm(forms.Form):
 
 class AnswersForm(forms.Form):
     CHOICES = (('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E'), ('f', 'F'))
-    def __init__(self, answers_no, *args,**kwargs):
+    def __init__(self, *args,**kwargs):
         super(AnswersForm, self).__init__(*args,**kwargs)
         self.fields['choice_field'] = forms.MultipleChoiceField(
             widget=forms.CheckboxSelectMultiple, choices=self.CHOICES, required=True, label='Pytanie')
 
 
 class AnswersFormSet(BaseFormSet):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, sheet_id, *args, **kwargs):
+        self.sheet_id = sheet_id
+        print sheet_id
+
         super(AnswersFormSet, self).__init__(*args, **kwargs)
         CHOICES = (('a', 'A',), ('b', 'B',), ('c', 'C',), ('d', 'D',), ('e', 'E',), ('f', 'F',))
-        print 'formset'
-        for i in range(0, 3):
-            self[i].fields['choice_field'].label += " {}".format(i + 1)
-            self[i].fields['choice_field'].choices = CHOICES
+        if self.sheet_id:
+            query = SheetQuestions.objects.filter(sheet_id=sheet_id)
+            for sq in query:
+                self[sq.order_number-1].fields['choice_field'].label += " {}".format(sq.order_number)
+                self[sq.order_number-1].fields['choice_field'].choices = CHOICES[:len(sq.answer_order)]

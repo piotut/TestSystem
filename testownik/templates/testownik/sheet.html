@@ -6,9 +6,9 @@
     </object>
 </div>
 <div>
-<form action="{% url 'sheet' 13538 1 %}" method="post">
+<form action="{% url 'sheet' nr_index %}" method="post">
     {% csrf_token %}
-{{ formset.as_p }} 
+{{ formset.as_table }} 
 {{ formset.management_form }}
     <input type="submit" value="Zapisz"/>
 </form>
