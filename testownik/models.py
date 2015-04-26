@@ -18,7 +18,7 @@ class Student(models.Model):
     index_number = models.IntegerField()
 
     def __unicode__(self):
-        return "{} {}, {}".format(self.first_name, self.last_name, self.index_number)
+        return u"{} {}, {}".format(self.first_name, self.last_name, self.index_number)
 
 
 class Question(models.Model):
