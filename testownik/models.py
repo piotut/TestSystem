@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -11,6 +12,10 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return "{}".format(self.user.username)
 
+    class Meta:
+        verbose_name = u"Profil użytkownika"
+        verbose_name_plural = u"Profile użytkowników"
+
 
 class Student(models.Model):
     first_name = models.CharField(max_length=30)
@@ -18,7 +23,10 @@ class Student(models.Model):
     index_number = models.IntegerField()
 
     def __unicode__(self):
-        return u"{} {}, {}".format(self.first_name, self.last_name, self.index_number)
+        return u"{} {}: {}".format(self.first_name, self.last_name, self.index_number)
+
+    class Meta:
+        verbose_name_plural = "Studenci"
 
 
 class Question(models.Model):
@@ -37,7 +45,11 @@ class Test(models.Model):
     author_id = models.ForeignKey(UserProfile)
 
     def __unicode__(self):
-        return "{} ({}-{}),{}".format(self.name, self.start_time, self.end_time, self.author_id)
+        return "{},{}".format(self.name, self.author_id)
+
+    class Meta:
+        verbose_name = "Test"
+        verbose_name_plural = "Testy"
 
 
 class Sheet(models.Model):
@@ -45,8 +57,15 @@ class Sheet(models.Model):
     student_id = models.ForeignKey(Student)
     sheet_number = models.SmallIntegerField()
 
+    def __unicode__(self):
+        return "{}, {}".format(self.student_id.index_number, self.test_id.name)
+
     def is_active(self):
         return self.test_id.end_time > timezone.now() > self.test_id.start_time
+
+    class Meta:
+        verbose_name = "Arkusz"
+        verbose_name_plural = "Arkusze"
 
 
 class Results(models.Model):

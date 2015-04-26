@@ -1,5 +1,21 @@
 {% extends "testownik/base.html" %}
 {% block content %}
+{% block css %}
+
+#answerscontainer ul
+{
+margin: 0;
+padding: 0;
+list-style-type: none;
+text-align: center;
+}
+
+#answerscontainer ul li {
+    display: inline;
+    list-style-type:none;
+}
+{% endblock css %}
+
 <div class="row">
   <div class="col-md-8" id='pdf'>
     <object width="100%" height="800" type="application/pdf" data="/pdf/{{ nr_index }}/{{ id }}" id="pdf_content">
