@@ -2,16 +2,16 @@
 {% extends "testownik/base.html" %}
 {% block content %}
 
-Strona startowa.
-
-Tutaj beda dwa przyciski:
-- rozpocznij test
-- zaloguj jako prowadzacy
-
-
-<form action="{% url 'index' %}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Przystap do testu"/>
-</form>
+<div class="row">
+	<div class="col-md-4">
+		<form action="{% url 'index' %}" method="post">
+		    {% csrf_token %}
+		    {{ form }}
+		    <input type="submit" value="Przystap do testu"/>
+		</form>
+	</div>
+	<div class="col-md-2">
+		<button onclick="location.href={% url 'login' %}">Zaloguj jako prowadzący</button>
+	</div>
+</div>
 {% endblock content %}

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django import forms
 from models import UserProfile
 from django.contrib.auth.models import User
@@ -25,10 +26,10 @@ class UploadFileForm(forms.Form):
     '''
     Forma do wyboru pliku.
     '''
-    title = forms.CharField(max_length=50)
-    start = forms.CharField(widget=forms.TextInput(attrs={'id': 'start'}))
-    end = forms.CharField(widget=forms.TextInput(attrs={'id': 'end'}))
-    file = forms.FileField()
+    name = forms.CharField(label='Nazwa testu', max_length=50)
+    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start'}))
+    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end'}))
+    file = forms.FileField(label='Plik')
 
 class UserCreationForm(forms.Form):
     """
@@ -37,12 +38,12 @@ class UserCreationForm(forms.Form):
     """
     CHOICES = (('teacher', 'Prowadzacy',), ('supervisor', 'Nadzorca',))
 
-    username = forms.CharField(label='login', required=True)
-    first_name = forms.CharField(label='imie', required=True)
-    last_name = forms.CharField(label='nazwisko', required=True)
-    password1 = forms.CharField(label="haslo", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="powtorz haslo", widget=forms.PasswordInput)
-    choice_field = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES, required=True)
+    username = forms.CharField(label='Login', required=True)
+    first_name = forms.CharField(label='Imię', required=True)
+    last_name = forms.CharField(label='Nazwisko', required=True)
+    password1 = forms.CharField(label="Hasło", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Powtorz hasło", widget=forms.PasswordInput)
+    choice_field = forms.ChoiceField(label=u"Typ użytkownika", widget=forms.RadioSelect, choices=CHOICES, required=True)
 
     def save(self):
         user = User(

@@ -5,9 +5,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 
+from django.utils import timezone
+
 from django.views.generic import View, DetailView, ListView
 
-from models import Student, Sheet, SheetQuestions
+from models import Student, Sheet, SheetQuestions, Test, UserProfile
 
 from forms import UserCreationForm
 from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
@@ -15,7 +17,6 @@ from django.forms.formsets import formset_factory
 
 import os
 import fnmatch
-from functools import partial, wraps
 
 class IndexView(View):
     '''
@@ -106,8 +107,8 @@ class UploadFileView(View):
     '''
     template_name = 'testownik/upload.html'
 
-    def handle_uploaded_file(self, fileh):
-        filename = os.path.join(MEDIA_DIR, 'test_id', str(fileh))
+    def handle_uploaded_file(self, testId, fileh):
+        filename = os.path.join(MEDIA_DIR, str(testId), str(fileh))
         dir = os.path.dirname(filename)
 
         if not os.path.exists(dir):
@@ -134,7 +135,15 @@ class UploadFileView(View):
         print request.FILES
 
         if form.is_valid():
-            self.handle_uploaded_file(request.FILES['file'])
+            print 'user {}'.format(request.user.id)
+            test = Test(
+                name=form.cleaned_data['name'],
+                start_time = timezone.now(),#form.cleaned_data['start'],
+                end_time = timezone.now(),#form.cleaned_data['end'],
+                author_id = UserProfile.objects.get(user__id=request.user.id)
+                )
+            test.save()
+            self.handle_uploaded_file(test.id, request.FILES['file'])
             return HttpResponse('zaladowano plik')
         print form.errors
         return HttpResponse('wystapil blad')

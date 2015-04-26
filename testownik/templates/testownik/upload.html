@@ -9,7 +9,7 @@
 {% block content %}
 <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-	{{ form }} 
+	{{ form.as_p }} 
     <input type="submit" value="Zapisz"/>
 </form>
 {% endblock content %}
