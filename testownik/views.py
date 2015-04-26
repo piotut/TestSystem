@@ -15,6 +15,8 @@ from forms import UserCreationForm
 from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
 from django.forms.formsets import formset_factory
 
+from datetime import datetime
+from re import match
 import os
 import fnmatch
 
@@ -66,12 +68,15 @@ class PdfGeneratorView(View):
     Widok do wyswietlania pliku pdf.
     '''
     def get(self, request, *args):
-        fileh = 'zestaw8.pdf'
-        filename = os.path.join(MEDIA_DIR, 'test_id', str(fileh))
+        test, sheet_number = Sheet.objects.get_test_and_sheet_number(13538)
+        fileh = 'testy_pdf/zestaw{}.pdf'.format(sheet_number)
+        filename = os.path.join(MEDIA_DIR, str(test.id), str(fileh))
+
         with open(filename, 'r') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=some_file.pdf'
             return response
+
 
 class SheetView(View):
     '''
@@ -95,7 +100,6 @@ class SheetView(View):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
         formset = AnswerForm(0, request.POST, request.FILES)
         if formset.is_valid():
-            print formset.cleaned_data
             return HttpResponse('Poprawnie wypelniona forma')
         print formset.errors
         return HttpResponse('Blednie wypelniona forma')
@@ -123,7 +127,7 @@ class UploadFileView(View):
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):
-                matchDir= root
+                matchDir = root
 
         os.system('mv --force '+ matchDir +'/* ' +dir)
 
@@ -131,27 +135,33 @@ class UploadFileView(View):
         save_students(testy_dbf)
         save_sheets(testy_dbf, testId)
 
+    def convert_time(self, time):
+        regex = '([0-9]){4}/([0-9]){2}/([0-9]){2} ([0-9]){2}:([0-9]){2}'
+        m = match(regex, time).groups()
+        return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
+
     def get(self, request):
         form = UploadFileForm()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
-        print request.FILES
 
         if form.is_valid():
-            print 'user {}'.format(request.user.id)
+            print form.cleaned_data['start']
             test = Test(
                 name=form.cleaned_data['name'],
-                start_time = timezone.now(),#form.cleaned_data['start'],
-                end_time = timezone.now(),#form.cleaned_data['end'],
+                start_time = self.convert_time(form.cleaned_data['start']),
+                end_time = self.convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id)
                 )
             test.save()
+            print 'test save przeszlo'
             self.handle_uploaded_file(test.id, request.FILES['file'])
             return HttpResponse('zaladowano plik')
         print form.errors
         return HttpResponse('wystapil blad')
+
 
 class UserCreationView(View):
     '''
@@ -162,7 +172,6 @@ class UserCreationView(View):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            print user.username
             user = authenticate(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password1']
