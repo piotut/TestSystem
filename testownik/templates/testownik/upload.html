@@ -1,8 +1,38 @@
 {% extends "testownik/base.html" %}
+<style type="text/css">
+
+.custom-date-style {
+	background-color: red !important;
+}
+
+</style>
 {% block content %}
 <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Dodaj plik"/>
+	{{ form }} 
+    <input type="submit" value="Zapisz"/>
 </form>
 {% endblock content %}
+
+
+{% block jsend %}
+<script>
+    var currentDate = new Date()
+    var day = currentDate.getDate()
+    var month = currentDate.getMonth() + 1
+    var year = currentDate.getFullYear()
+    var fullDate = year + "/" + month + "/" + day
+
+$('#start').datetimepicker({
+dayOfWeekStart : 1,
+lang:'pl',
+startDate:	fullDate
+});
+$('#end').datetimepicker({
+dayOfWeekStart : 1,
+lang:'pl',
+startDate:	fullDate
+});
+
+</script>
+{% endblock jsend %}

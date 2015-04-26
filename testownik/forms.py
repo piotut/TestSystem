@@ -2,6 +2,7 @@ from django import forms
 from models import UserProfile
 from django.contrib.auth.models import User
 from django.forms.formsets import BaseFormSet
+from django.contrib.admin.widgets import AdminDateWidget
 
 from models import SheetQuestions, Question
 
@@ -25,6 +26,8 @@ class UploadFileForm(forms.Form):
     Forma do wyboru pliku.
     '''
     title = forms.CharField(max_length=50)
+    start = forms.CharField(widget=forms.TextInput(attrs={'id': 'start'}))
+    end = forms.CharField(widget=forms.TextInput(attrs={'id': 'end'}))
     file = forms.FileField()
 
 class UserCreationForm(forms.Form):
