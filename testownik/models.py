@@ -18,16 +18,16 @@ class Student(models.Model):
     index_number = models.IntegerField()
 
     def __unicode__(self):
-        return "{} {}, {}".format(self.first_name, self.last_name, self.index_number)
+        return u"{} {}, {}".format(self.first_name, self.last_name, self.index_number)
 
 
 class Question(models.Model):
-    a_points = models.SmallIntegerField()
-    b_points = models.SmallIntegerField()
-    c_points = models.SmallIntegerField()
-    d_points = models.SmallIntegerField()
-    e_points = models.SmallIntegerField()
-    f_points = models.SmallIntegerField()
+    a_points = models.SmallIntegerField(null=True)
+    b_points = models.SmallIntegerField(null=True)
+    c_points = models.SmallIntegerField(null=True)
+    d_points = models.SmallIntegerField(null=True)
+    e_points = models.SmallIntegerField(null=True)
+    f_points = models.SmallIntegerField(null=True)
 
 
 class Test(models.Model):
@@ -43,6 +43,7 @@ class Test(models.Model):
 class Sheet(models.Model):
     test_id = models.ForeignKey(Test)
     student_id = models.ForeignKey(Student)
+    sheet_number = models.SmallIntegerField()
 
     def is_active(self):
         return self.test_id.end_time > timezone.now() > self.test_id.start_time
