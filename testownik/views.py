@@ -20,8 +20,6 @@ from re import match
 import os
 import fnmatch
 
-from SaveDBF import save_students
-
 class IndexView(View):
     '''
     Strona glowna
@@ -131,13 +129,11 @@ class UploadFileView(View):
 
         os.system('mv --force '+ matchDir +'/* ' +dir)
 
-        testy_dbf = os.path.join(MEDIA_DIR, str(testId), "testy.dbf")
-        save_students(testy_dbf)
-
     def convert_time(self, time):
         regex = '([0-9]){4}/([0-9]){2}/([0-9]){2} ([0-9]){2}:([0-9]){2}'
         m = match(regex, time).groups()
         return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
+
 
     def get(self, request):
         form = UploadFileForm()
@@ -157,9 +153,10 @@ class UploadFileView(View):
             test.save()
             print 'test save przeszlo'
             self.handle_uploaded_file(test.id, request.FILES['file'])
-            return HttpResponse('zaladowano plik')''
+            return HttpResponse('zaladowano plik')
         print form.errors
         return HttpResponse('wystapil blad')
+
 
 class UserCreationView(View):
     '''
