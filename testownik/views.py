@@ -18,7 +18,7 @@ from django.forms.formsets import formset_factory
 import os
 import fnmatch
 
-from SaveDBF import save_students
+from SaveDBF import save_students, save_sheets
 
 class IndexView(View):
     '''
@@ -129,6 +129,7 @@ class UploadFileView(View):
 
         testy_dbf = os.path.join(MEDIA_DIR, str(testId), "testy.dbf")
         save_students(testy_dbf)
+        save_sheets(testy_dbf, testId)
 
     def get(self, request):
         form = UploadFileForm()

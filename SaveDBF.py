@@ -3,7 +3,7 @@
 
 from dbfpy import dbf
 
-from testownik.models import Student
+from testownik.models import Student, Test, Sheet
 
 def save_students(path):
     db = dbf.Dbf(path)
@@ -22,3 +22,35 @@ def save_students(path):
             s.index_number = index_number
             s.save()
     db.close()
+
+
+def save_sheets(path, testId):
+    try:
+        db = dbf.Dbf(path)
+        test = Test.objects.get(id=testId)
+    except Test.DoesNotExist:
+        print u"Test nie istnieje!"
+    except Test.MultipleObjectReturned:
+        print u"Wiele testów o danym ID"
+    else:
+        for record in db:
+            index_number = int(record['NR_ALBUMU'])
+            try:
+                student = Student.objects.get(index_number=index_number)
+                print student
+            except Student.DoesNotExist:
+                print u"Student NIE ISTNIEJE W BAZIE!"
+                continue
+            except Student.MultipleObjectReturned:
+                print u"Wiele wpisów o tym samym numerze indeksu"
+                continue
+            else:
+                number = int(record['NR_ZESTAWU'])
+
+                sheet = Sheet()
+                sheet.test_id = test
+                sheet.student_id = student
+                sheet.sheet_number = number
+                sheet.save()
+    finally:
+        db.close()
