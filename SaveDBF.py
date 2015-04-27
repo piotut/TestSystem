@@ -49,13 +49,9 @@ class SaveDBF():
             try:
                 student = self.save_student(rec_testy_dbf)
             except ValueError:
-                print '#'*40
+                ## INDEX NR 0
                 continue
-                # print rec_testy_dbf
-                # print '-'*40
-                # print e.args
             except Exception:
-                print '-'*40
                 student = Student.objects.get(index_number=int(rec_testy_dbf['NR_ALBUMU']))
                 sheet = self.save_one_sheet(rec_testy_dbf, student)
                 self.save_sheet_questions(sheet)

@@ -68,7 +68,7 @@ class PdfGeneratorView(View):
     Widok do wyswietlania pliku pdf.
     '''
     def get(self, request, *args):
-        test, sheet_number = Sheet.objects.get_test_and_sheet_number(13538)
+        test, sheet_number = Sheet.objects.get_test_and_sheet_number(self.args[0])
         fileh = 'testy_pdf/zestaw{}.pdf'.format(sheet_number)
         filename = os.path.join(MEDIA_DIR, str(test.id), str(fileh))
 
@@ -135,7 +135,7 @@ class UploadFileView(View):
         s.save_test(testId)
 
     def convert_time(self, time):
-        regex = '([0-9]){4}/([0-9]){2}/([0-9]){2} ([0-9]){2}:([0-9]){2}'
+        regex = '([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2})'
         m = match(regex, time).groups()
         return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
 
@@ -147,7 +147,6 @@ class UploadFileView(View):
         form = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            print form.cleaned_data['start']
             test = Test(
                 name=form.cleaned_data['name'],
                 start_time = self.convert_time(form.cleaned_data['start']),
@@ -155,10 +154,8 @@ class UploadFileView(View):
                 author_id = UserProfile.objects.get(user__id=request.user.id)
                 )
             test.save()
-            print 'test save przeszlo'
             self.handle_uploaded_file(test.id, request.FILES['file'])
             return HttpResponse('zaladowano plik')
-        print form.errors
         return HttpResponse('wystapil blad')
 
 
