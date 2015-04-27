@@ -3,54 +3,134 @@
 
 from dbfpy import dbf
 
-from testownik.models import Student, Test, Sheet
+from testownik.models import Student, Test, Sheet, SheetQuestions, Question
 
-def save_students(path):
-    db = dbf.Dbf(path)
-    for record in db:
-        index_number = int(record['NR_ALBUMU'])
-        if index_number == 0:
-            continue
-        student_exists = Student.objects.filter(index_number=index_number).count()
-        if not student_exists:
-            first_name = record['IMIE'].decode('windows-1250')
-            last_name = record['NAZWISKO'].decode('windows-1250')
+import os
 
-            s = Student()
-            s.first_name = first_name
-            s.last_name = last_name
-            s.index_number = index_number
-            s.save()
-    db.close()
+class SaveDBF():
+    def __init__(self, MEDIA_DIR, testy_dbf_filename="testy.dbf", zestawy_dbf_filename="zestawy.dbf"):
+        self.MEDIA_DIR = MEDIA_DIR
+        self.testy_dbf_filename = testy_dbf_filename
+        self.zestawy_dbf_filename = zestawy_dbf_filename
 
+        self.testy_dbf_path = None
+        self.zestawy_dbf_path = None
 
-def save_sheets(path, testId):
-    try:
-        db = dbf.Dbf(path)
-        test = Test.objects.get(id=testId)
-    except Test.DoesNotExist:
-        print u"Test nie istnieje!"
-    except Test.MultipleObjectReturned:
-        print u"Wiele testów o danym ID"
-    else:
-        for record in db:
-            index_number = int(record['NR_ALBUMU'])
+        self.testy_dbf = None
+        self.zestawy_dbf = None
+
+        self.test = None
+
+        self.saved_questions = set()
+
+    def save_test(self, test_id):
+        self.testy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.testy_dbf_filename)
+        self.zestawy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.zestawy_dbf_filename)
+
+        try:
+            self.test = Test.objects.get(id=test_id)
+        except (Test.DoesNotExist, Test.MultipleObjectsReturned):
+            raise Exception("Test ERROR!")
+
+        self.open_dbf_files()
+        self.save_sheets()
+        self.close_dbf_files()
+
+    def open_dbf_files(self):
+        self.testy_dbf = dbf.Dbf(self.testy_dbf_path)
+        if not self.testy_dbf:
+            raise Exception("Can't open %s file!" % self.testy_dbf_path)
+        self.zestawy_dbf = dbf.Dbf(self.zestawy_dbf_path)
+        if not self.zestawy_dbf:
+            raise Exception("Can't open %s file!" % self.zestawy_dbf_path)
+
+    def save_sheets(self):
+        for rec_testy_dbf in self.testy_dbf:
             try:
-                student = Student.objects.get(index_number=index_number)
-                print student
-            except Student.DoesNotExist:
-                print u"Student NIE ISTNIEJE W BAZIE!"
+                student = self.save_student(rec_testy_dbf)
+            except ValueError:
+                print '#'*40
                 continue
-            except Student.MultipleObjectReturned:
-                print u"Wiele wpisów o tym samym numerze indeksu"
-                continue
+                # print rec_testy_dbf
+                # print '-'*40
+                # print e.args
+            except Exception:
+                print '-'*40
+                student = Student.objects.get(index_number=int(rec_testy_dbf['NR_ALBUMU']))
+                sheet = self.save_one_sheet(rec_testy_dbf, student)
+                self.save_sheet_questions(sheet)
             else:
-                number = int(record['NR_ZESTAWU'])
+                sheet = self.save_one_sheet(rec_testy_dbf, student)
+                self.save_sheet_questions(sheet)
 
-                sheet = Sheet()
-                sheet.test_id = test
-                sheet.student_id = student
-                sheet.sheet_number = number
-                sheet.save()
-    finally:
-        db.close()
+    def save_student(self, rec_testy_dbf):
+        index_number = int(rec_testy_dbf['NR_ALBUMU'])
+        if index_number == 0:
+            raise ValueError
+        student_exists = Student.objects.filter(index_number=index_number).count()
+        if student_exists:
+            raise Exception("STUDENT ALREADY EXISTS!")
+        else:
+            first_name = rec_testy_dbf['IMIE'].decode('windows-1250')
+            last_name = rec_testy_dbf['NAZWISKO'].decode('windows-1250')
+
+            student = Student()
+            student.first_name = first_name
+            student.last_name = last_name
+            student.index_number = index_number
+            student.save()
+        return student
+
+    def save_one_sheet(self, rec_testy_dbf, student):
+        number = int(rec_testy_dbf['NR_ZESTAWU'])
+
+        sheet = Sheet()
+        sheet.test_id = self.test
+        sheet.student_id = student
+        sheet.sheet_number = number
+        sheet.save()
+
+        return sheet
+
+    def save_sheet_questions(self, sheet):
+        number = sheet.sheet_number
+        for rec_zestawy_dbf in self.zestawy_dbf:
+            if number == int(rec_zestawy_dbf['NR_ZESTAWU']):
+                question = self.get_or_create_question(rec_zestawy_dbf)
+                sheet_questions = SheetQuestions()
+                sheet_questions.question_id = question
+                sheet_questions.sheet_id = sheet
+                sheet_questions.order_number = int(rec_zestawy_dbf['NR_KOLEJNY'])
+                sheet_questions.answer_order = rec_zestawy_dbf['KOLEJNOSC'].decode('windows-1250')
+                sheet_questions.save()
+
+    def get_or_create_question(self, rec_zestawy_dbf):
+        question_number = int(rec_zestawy_dbf['NR_PYTANIA'])
+        
+        sq = SheetQuestions.objects.filter(sheet_id__test_id=self.test.id, question_id__question_number=question_number)
+        if len(sq):
+            question = sq[0].question_id
+        else:
+            question = self.save_question(rec_zestawy_dbf)
+
+        return question
+
+    def save_question(self, rec_zestawy_dbf):
+        question = Question()
+        question.question_number = int(rec_zestawy_dbf['NR_PYTANIA'])
+        question.a_points = int(rec_zestawy_dbf['PUNKTY_A'])
+        question.b_points = int(rec_zestawy_dbf['PUNKTY_B'])
+        question.c_points = int(rec_zestawy_dbf['PUNKTY_C'])
+        question.d_points = int(rec_zestawy_dbf['PUNKTY_D'])
+        question.e_points = int(rec_zestawy_dbf['PUNKTY_E'])
+        question.f_points = int(rec_zestawy_dbf['PUNKTY_F'])
+        question.save()
+
+        return question
+   
+    def close_dbf_files(self):
+        self.testy_dbf.close()
+        self.testy_dbf = None
+
+        self.zestawy_dbf.close()
+        self.zestawy_dbf = None

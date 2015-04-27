@@ -30,6 +30,7 @@ class Student(models.Model):
 
 
 class Question(models.Model):
+    question_number = models.SmallIntegerField()
     a_points = models.SmallIntegerField(null=True)
     b_points = models.SmallIntegerField(null=True)
     c_points = models.SmallIntegerField(null=True)

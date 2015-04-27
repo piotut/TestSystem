@@ -20,7 +20,7 @@ from re import match
 import os
 import fnmatch
 
-from SaveDBF import save_students, save_sheets
+from SaveDBF import SaveDBF
 
 class IndexView(View):
     '''
@@ -131,9 +131,8 @@ class UploadFileView(View):
 
         os.system('mv --force '+ matchDir +'/* ' +dir)
 
-        testy_dbf = os.path.join(MEDIA_DIR, str(testId), "testy.dbf")
-        save_students(testy_dbf)
-        save_sheets(testy_dbf, testId)
+        s = SaveDBF(MEDIA_DIR)
+        s.save_test(testId)
 
     def convert_time(self, time):
         regex = '([0-9]){4}/([0-9]){2}/([0-9]){2} ([0-9]){2}:([0-9]){2}'
