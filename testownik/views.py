@@ -21,6 +21,7 @@ import os
 import fnmatch
 
 from SaveDBF import SaveDBF
+from TestResults import TestResults
 
 class IndexView(View):
     '''
@@ -83,16 +84,18 @@ class SheetView(View):
     Widok do wysietlania gotowego arkusza. Arkusz musi byc aktywny.
     '''
     template_name = 'testownik/sheet.html'
+
     
     def get(self, request, *args):
         sheet_list = Sheet.objects.filter(student_id__index_number=self.args[0])
-        sheet_id = 0
+        #sheet_id = 0
         for sheet in sheet_list:
             if sheet.is_active():
                 sheet_id = sheet.id
                 questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
                 AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
                 formset = AnswerForm(sheet_id)
+                print sheet_id
                 return render(request, self.template_name, {'nr_index': args[0], 'id': sheet_id, 'formset': formset})
         return HttpResponse('Brak aktywnego testu')
 
@@ -100,6 +103,7 @@ class SheetView(View):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
         formset = AnswerForm(0, request.POST, request.FILES)
         if formset.is_valid():
+            TestResults(formset.cleaned_data, args[0])
             return HttpResponse('Poprawnie wypelniona forma')
         print formset.errors
         return HttpResponse('Blednie wypelniona forma')
