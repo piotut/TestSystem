@@ -30,12 +30,12 @@
 <ul class="nav nav-tabs">
       <li><a href="{% url 'index' %}">Strona główna</a></li>
       <li><a href="{% url 'help' %}">Pomoc</a></li>
-      <li><a href="{% url 'create_user' %}">Zarejestruj</a></li>
+      <li><a href="{% url 'create_user' %}">Zarejestruj się</a></li>
 {% if not user.is_authenticated %}
       <li><a href="{% url 'login' %}">Logowanie</a></li>
 {% else %}
       <li><a href="{% url 'logout' %}">{{ user.username }}(wyloguj)</a></li>
-      <li><a href="{% url 'upload' %}">Zaladuj test</a></li>
+      <li><a href="{% url 'upload' %}">Dodaj nowy test</a></li>
 {% endif %}
 </ul>
 
