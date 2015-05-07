@@ -1,6 +1,6 @@
 from TestSystem.settings import MEDIA_DIR
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from django.views.generic import View, DetailView, ListView
 
+from django.contrib.auth.models import User
 from models import Student, Sheet, SheetQuestions, Test, UserProfile
 
 from forms import UserCreationForm
@@ -187,3 +188,13 @@ class UserCreationView(View):
     def get(self, request):
         form = UserCreationForm()
         return render(request, self.template_name, {'form': form})
+
+
+class TestListView(ListView):
+    '''
+    Lista testow prowadzacego wraz z informacjami o nich
+    '''
+    template_name = 'testownik/tests.html'
+
+    def get_queryset(self, *args):
+        return Test.objects.filter(author_id__user=self.request.user)

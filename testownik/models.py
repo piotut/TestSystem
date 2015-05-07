@@ -47,7 +47,10 @@ class Test(models.Model):
     time = models.SmallIntegerField(null=True)
 
     def __unicode__(self):
-        return "{},{}".format(self.name, self.author_id)
+        return "{}, {}".format(self.name, self.author_id)
+
+    def is_active(self):
+        return self.end_time > timezone.now() > self.start_time 
 
     class Meta:
         verbose_name = "Test"

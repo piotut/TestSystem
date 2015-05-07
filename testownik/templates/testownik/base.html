@@ -36,6 +36,7 @@
 {% else %}
       <li><a href="{% url 'logout' %}">{{ user.username }}(wyloguj)</a></li>
       <li><a href="{% url 'upload' %}">Dodaj nowy test</a></li>
+      <li><a href="{% url 'tests' %}">Lista testow</a></li>
 {% endif %}
 </ul>
 
