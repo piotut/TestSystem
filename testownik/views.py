@@ -95,8 +95,8 @@ class SheetView(View):
                 questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
                 AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
                 formset = AnswerForm(sheet_id)
-                print sheet_id
-                return render(request, self.template_name, {'nr_index': args[0], 'id': sheet_id, 'formset': formset})
+                print sheet.student_id
+                return render(request, self.template_name, {'student': sheet.student_id, 'id': sheet_id, 'formset': formset})
         return HttpResponse('Brak aktywnego testu')
 
     def post(self, request, *args):
