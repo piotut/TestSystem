@@ -43,6 +43,7 @@ class TestResults(object):
         sq_id_list = [sq_id for sq_id in sq_list]
 
         for i, element in enumerate(correct_answer_list):
+            print sq_id_list[i].question_id.id
             res = Results(
                 sheet_id  = sheet,
                 question_id = sq_id_list[i].question_id,
@@ -54,3 +55,20 @@ class TestResults(object):
                 f = self._list_or_none(element, 5)
             )
             res.save()
+
+        self.compare_results_and_questions(sheet)
+    
+    def compare_results_and_questions(self, sheet):
+        res_list = Results.objects.filter(sheet_id=sheet)
+        self.points = 0
+        for res in res_list:
+            self.points += res.question_id.a_points * res.a
+            self.points += res.question_id.b_points * res.b
+            self.points += res.question_id.c_points * res.c
+            self.points += res.question_id.d_points * res.d
+            self.points += res.question_id.e_points * res.e
+            self.points += res.question_id.f_points * res.f
+
+        sheet.points = self.points
+        sheet.save()
+        

@@ -85,7 +85,7 @@ class Sheet(models.Model):
 
 class Results(models.Model):
     sheet_id  = models.ForeignKey(Sheet)
-    question_id = models.OneToOneField(Question)
+    question_id = models.ForeignKey(Question)
     a = models.BooleanField()
     b = models.BooleanField()
     c = models.BooleanField()

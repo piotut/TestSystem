@@ -19,6 +19,9 @@ text-align: center;
 <div>
     {{ student.first_name }} {{ student.last_name }}, {{ student.index_number }}
 </div>
+{% if msg_points %}
+Zdobyles {{ msg_points }} punktow za ten test.
+{% else %}
 <div class="row">
   <div class="col-md-8" id='pdf'>
     <object width="100%" height="800" type="application/pdf" data="/pdf/{{ student.index_number }}/{{ id }}" id="pdf_content">
@@ -34,4 +37,5 @@ text-align: center;
     <input type="submit" value="Zapisz"/>
     </form>
 </div>
+{% endif %}
 {% endblock content %}

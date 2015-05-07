@@ -95,7 +95,9 @@ class SheetView(View):
                 questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
                 AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
                 formset = AnswerForm(sheet_id)
-                print sheet.student_id
+                #print sheet.student_id
+                if sheet.points:
+                    return render(request, self.template_name, {'msg_points': sheet.points})
                 return render(request, self.template_name, {'student': sheet.student_id, 'id': sheet_id, 'formset': formset})
         return HttpResponse('Brak aktywnego testu')
 
@@ -103,8 +105,8 @@ class SheetView(View):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
         formset = AnswerForm(0, request.POST, request.FILES)
         if formset.is_valid():
-            TestResults(formset.cleaned_data, args[0])
-            return HttpResponse('Poprawnie wypelniona forma')
+            result = TestResults(formset.cleaned_data, args[0])
+            return render(request, self.template_name, {'msg_points': result.points})
         print formset.errors
         return HttpResponse('Blednie wypelniona forma')
 
