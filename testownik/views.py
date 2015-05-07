@@ -35,7 +35,15 @@ class IndexView(View):
 
         if form.is_valid():
             index = form.cleaned_data['index']
-            return HttpResponseRedirect(reverse('sheet', args=[index]))
+            sheet_list = Sheet.objects.filter(student_id__index_number=index)
+            for sheet in sheet_list:
+                if sheet.is_active():
+                    if sheet.points != None:
+                        return render(request, 'testownik/sheet.html', {'msg_points': sheet.points})
+                    else:
+                        return HttpResponseRedirect(reverse('sheet', args=[sheet.id]))
+            return HttpResponse('Brak aktywnego testu dla studenta o indeksie {}'.format(index))
+
 
     def get(self, request):
         form = StudentForm()
@@ -86,29 +94,26 @@ class SheetView(View):
     '''
     template_name = 'testownik/sheet.html'
 
-    
     def get(self, request, *args):
-        sheet_list = Sheet.objects.filter(student_id__index_number=self.args[0])
-        #sheet_id = 0
-        for sheet in sheet_list:
-            if sheet.is_active():
-                sheet_id = sheet.id
-                questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
-                AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
-                formset = AnswerForm(sheet_id)
-                #print sheet.student_id
-                if sheet.points:
-                    return render(request, self.template_name, {'msg_points': sheet.points})
-                return render(request, self.template_name, {'student': sheet.student_id, 'id': sheet_id, 'formset': formset})
-        return HttpResponse('Brak aktywnego testu')
+        sheet_id = self.args[0]
+        sheet = Sheet.objects.get(id=sheet_id)
+        questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
+        AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
+        formset = AnswerForm(sheet_id)
+        if sheet.points:
+            return render(request, self.template_name, {'msg_points': sheet.points})
+        return render(request, self.template_name, {'student': sheet.student_id, 'id': sheet_id, 'formset': formset})        
 
     def post(self, request, *args):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
         formset = AnswerForm(0, request.POST, request.FILES)
+        sheet = Sheet.objects.get(id=args[0])
         if formset.is_valid():
+            if sheet.points != None:
+                return render(request, self.template_name, {'msg_points': sheet.points})
             result = TestResults(formset.cleaned_data, args[0])
             return render(request, self.template_name, {'msg_points': result.points})
-        print formset.errors
+        #print formset.errors
         return HttpResponse('Blednie wypelniona forma')
 
 
@@ -198,3 +203,12 @@ class TestListView(ListView):
 
     def get_queryset(self, *args):
         return Test.objects.filter(author_id__user=self.request.user)
+
+class SheetListView(ListView):
+    '''
+    Lista testow prowadzacego wraz z informacjami o nich
+    '''
+    template_name = 'testownik/sheets.html'
+
+    def get_queryset(self, *args):
+        return Sheet.objects.filter(test_id__id=self.args[0])

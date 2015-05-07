@@ -4,16 +4,19 @@
 from testownik.models import Sheet, SheetQuestions, Results, Question
 
 class TestResults(object):
-    def __init__(self, answers, index):
+    def __init__(self, answers, sheet_id):
         self.answers = answers
-        self.index = index
+        self.sheet_id = sheet_id
+        print sheet_id
         self.save_results()
 
     def get_sheet_obj(self):
         '''Zwraca aktywny arkusz dla studenta o danym indeksie'''
-        sheet_list = Sheet.objects.filter(student_id__index_number=self.index)
+        sheet_list = Sheet.objects.filter(id=self.sheet_id)
+        print sheet_list
         for sheet in sheet_list:
             if sheet.is_active():
+                print sheet
                 return sheet
 
     def get_sheetquestions_obj(self, sheet_obj):
@@ -43,7 +46,7 @@ class TestResults(object):
         sq_id_list = [sq_id for sq_id in sq_list]
 
         for i, element in enumerate(correct_answer_list):
-            print sq_id_list[i].question_id.id
+            #print sq_id_list[i].question_id.id
             res = Results(
                 sheet_id  = sheet,
                 question_id = sq_id_list[i].question_id,
@@ -60,6 +63,7 @@ class TestResults(object):
     
     def compare_results_and_questions(self, sheet):
         res_list = Results.objects.filter(sheet_id=sheet)
+        print sheet
         self.points = 0
         for res in res_list:
             self.points += res.question_id.a_points * res.a
@@ -69,6 +73,8 @@ class TestResults(object):
             self.points += res.question_id.e_points * res.e
             self.points += res.question_id.f_points * res.f
 
+        print self.points
         sheet.points = self.points
+        print sheet.points
         sheet.save()
         

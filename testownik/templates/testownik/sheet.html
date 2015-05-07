@@ -19,7 +19,7 @@ text-align: center;
 <div>
     {{ student.first_name }} {{ student.last_name }}, {{ student.index_number }}
 </div>
-{% if msg_points %}
+{% if msg_points > -1 %}
 Zdobyles {{ msg_points }} punktow za ten test.
 {% else %}
 <div class="row">
@@ -28,7 +28,7 @@ Zdobyles {{ msg_points }} punktow za ten test.
     <p>Nie można wyświetlić arkusza PDF, sprawdź ustawienia przeglądarki.</p>
     </object>
     </div>
-  <div class="col-md-3"><form action="{% url 'sheet' student.index_number %}" method="post">
+  <div class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
 {% csrf_token %}
 <div id="answerscontainer">
 {{ formset.as_table }} 
