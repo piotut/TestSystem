@@ -44,6 +44,7 @@ class Test(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     author_id = models.ForeignKey(UserProfile)
+    time = models.SmallIntegerField(null=True)
 
     def __unicode__(self):
         return "{},{}".format(self.name, self.author_id)
@@ -67,6 +68,7 @@ class Sheet(models.Model):
     test_id = models.ForeignKey(Test)
     student_id = models.ForeignKey(Student)
     sheet_number = models.SmallIntegerField()
+    points = models.SmallIntegerField(null=True)
 
     def __unicode__(self):
         return "{}, {}".format(self.student_id.index_number, self.test_id.name)
