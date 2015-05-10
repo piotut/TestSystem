@@ -8,12 +8,19 @@
 </style>
 {% block content %}
 {{ msg }}
-
-<form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-	{{ form.as_p }} 
-    <input type="submit" value="Zapisz"/>
-</form>
+<div class="container">
+    <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+        <div class="panel panel-primary">
+            <div class="panel-heading"> <h4> Dodawanie testu </h2></div>
+            <div style="padding-top:15px" class="panel-body" >
+                <form class="form-horizontal-center" action="{% url 'upload' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                	{{ form.as_p }} 
+                    <button class="btn btn-lg btn-success btn-block" type="submit">Dodaj</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
 
 

@@ -20,33 +20,47 @@
 {% endblock css %}
 
 </style>
-
+<script>
 {% block js %}
 {% endblock js %}
+</script>
+{% url 'index' as index_url %}
+{% url 'help' as help_url %}
+{% url 'create_user' as create_user_url %}
+{% url 'login' as login_url %}
+{% url 'logout' as logout_url %}
+{% url 'upload' as upload_url %}
+{% url 'tests' as tests_url %}
 
 </head>
 
 <body>
-<ul class="nav nav-tabs">
-      <li><a href="{% url 'index' %}">Strona główna</a></li>
-      <li><a href="{% url 'help' %}">Pomoc</a></li>
-      <li><a href="{% url 'create_user' %}">Zarejestruj się</a></li>
-{% if not user.is_authenticated %}
-      <li><a href="{% url 'login' %}">Logowanie</a></li>
-{% else %}
-      <li><a href="{% url 'logout' %}">{{ user.username }}(wyloguj)</a></li>
-      <li><a href="{% url 'upload' %}">Dodaj nowy test</a></li>
-      <li><a href="{% url 'tests' %}">Lista testow</a></li>
-{% endif %}
-</ul>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                      <li{% ifequal request.path index_url %} class="active" {% endifequal %}><a href="{% url 'index' %}">Strona główna</a></li>
+                      <li{% ifequal request.path help_url %} class="active" {% endifequal %}><a href="{% url 'help' %}">Pomoc</a></li>
+                      <li{% ifequal request.path create_user_url %} class="active" {% endifequal %}><a href="{% url 'create_user' %}">Zarejestruj się</a></li>
+                {% if not user.is_authenticated %}
+                      <li{% ifequal request.path login_url %} class="active" {% endifequal %}><a href="{% url 'login' %}">Logowanie</a></li>
+                {% else %}
+                      <li{% ifequal request.path logout_url %} class="active" {% endifequal %}><a href="{% url 'logout' %}">{{ user.username }}(wyloguj)</a></li>
+                      <li{% ifequal request.path upload_url %} class="active" {% endifequal %}><a href="{% url 'upload' %}">Dodaj nowy test</a></li>
+                      <li{% ifequal request.path tests_url %} class="active" {% endifequal %}><a href="{% url 'tests' %}">Lista testow</a></li>
+                {% endif %}
+                </ul>
+        </div><!--/.nav-collapse -->
+    </nav>
+<div style="padding-top: 50px">
 
 {% block content %}
 {% endblock content %}
-
+</div>
 </body>
 
 {% block jsend %}
 {% endblock jsend %}
 
 </html>
-

@@ -1,8 +1,26 @@
 {% extends "testownik/base.html" %}
+
+{% block css %}
+ul
+{
+    list-style-type: none;    
+}
+{% endblock css %}
+
 {% block content %}
-<form action="{% url 'create_user' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Zarejestruj"/>
-</form>
+<div class="container">
+    <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+        <div class="panel panel-success">
+            <div class="panel-heading"> <h4> Rejestracja </h2></div>
+            <div style="padding-top:15px" class="panel-body" >
+                <form action="{% url 'create_user' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <div style="margin-bottom: 25px" class="form-group">
+                        {{ form }}
+                    </div>
+                    <button class="btn btn-lg btn-success btn-block" type="submit">Zarejestruj</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
