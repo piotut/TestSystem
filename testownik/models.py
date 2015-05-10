@@ -40,7 +40,7 @@ class Question(models.Model):
 
 
 class Test(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default='')
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     author_id = models.ForeignKey(UserProfile)

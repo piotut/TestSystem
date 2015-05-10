@@ -36,23 +36,11 @@ class UploadFileForm(forms.Form):
     '''
     Forma do wyboru pliku.
     '''
-    name = forms.CharField(
-        label='Nazwa testu',
-        max_length=50,
-        widget=forms.TextInput({'class': "form-control"}),
-        )
-    start = forms.CharField(
-        label='Data początku',
-        widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}),
-        )
-    end = forms.CharField(
-        label='Data końca',
-        widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}),
-        )
-    file = forms.FileField(
-        label='Plik',
-        widget=forms.FileInput(attrs={'class': "form-control"})
-        )
+    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}))
+    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
+    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))
+    file = forms.FileField(label='Plik', widget=forms.FileInput(attrs={'class': "form-control"}))
+
 
 class UserCreationForm(forms.Form):
     """
