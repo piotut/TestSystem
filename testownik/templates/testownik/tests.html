@@ -1,17 +1,19 @@
 {% extends "testownik/base.html" %}
 
 {% block content %}
-<table>
+<table class="table table-striped table-bordered table-hover">
 <tr>
     <td>Nazwa</td>
-    <td>Aktywny?</td>
+    <td>Aktywny</td>
     <td>Arkusze</td>
+    <td>Edytuj</td>
 </tr>
 {% for test in object_list %}
 <tr>
     <td>{{ test.name }}</td>
     <td>{% if test.is_active %} Tak {% else %} Nie {% endif %}</td>
     <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
+    <td><a href="{% url 'sheets' test.id %}">Edytuj</a></td>
 </tr>
 {% endfor %}
 </table>

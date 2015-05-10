@@ -37,7 +37,10 @@ function timer(){
 
 {% block content %}
 {% if msg_points > -1 and not user.is_authenticated %}
-Zdobyles {{ msg_points }} punktow za ten test.
+<div class="alert alert-success" role="alert">
+Test został rozwiązany i zapisany. <br>
+Liczba zdobytych punktów: <b>{{ msg_points }}</b>
+</div>
 {% else %}
     <nav class="navbar navbar-default navbar-fixed-top">
         <div id="navbar" class="navbar-collapse collapse">
