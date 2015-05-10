@@ -136,8 +136,8 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
-        os.system('unzip -o '+ filename +' -d '+dir+'/')
-        os.system('rm ' + filename)
+        os.system('unzip -o "'+ filename +'" -d '+dir+'/')
+        os.system('rm "' + filename + '"')
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):
