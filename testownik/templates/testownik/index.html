@@ -1,19 +1,39 @@
 
 {% extends "testownik/base.html" %}
 {% block content %}
+
+<div class="container">
 {% if not user.is_authenticated %}
-<div class="row">
-	<div class="col-md-4">
-		<form action="{% url 'index' %}" method="post">
-		    {% csrf_token %}
-		    {{ form }}
-		    <input type="submit" value="Przystap do testu"/>
-		</form>
+	<div id="box" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-primary">
+			<div class="panel-heading"> <h4> Witaj Studencie! </h2></div>
+			<div style="padding-top:30px" class="panel-body" >
+				<form class="form-horizontal-center" action="{% url 'index' %}" method="post">{% csrf_token %}
+					<div style="margin-bottom: 25px" class="form-group">
+				    	{{ form }}
+				    </div>
+				    <button class="btn btn-lg btn-success btn-block" type="submit">Przystap do testu</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div id="box" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-info">
+			<div class="panel-heading"> <h4> Witaj Prowadzący! </h2></div>
+			<div style="padding-top:30px" class="panel-body" >
+				<div class="center" action="{% url 'index' %}" method="post">{% csrf_token %}
+					<div style="margin-bottom: 25px" class="form-group">
+				    	<button class="btn btn-lg btn-primary btn-block" onclick="location.href={% url 'login' %}">Zaloguj jako prowadzący</button>
+						<button class="btn btn-lg btn-danger btn-block" onclick="location.href=/admin/">Zaloguj jako administrator</button>
+				    </div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<div class="col-md-2">
-		<button onclick="location.href={% url 'login' %}">Zaloguj jako prowadzący</button>
-		<button onclick="location.href=/admin/">Zaloguj jako administrator</button>
+
 	</div>
+
 </div>
 {% else %}
 Jesteś zalogowany jako {{ user.username }}.
