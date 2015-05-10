@@ -1,17 +1,27 @@
 {% extends "testownik/base.html" %}
 
 {% block content %}
-Podejście do testu {{ sheet.test_id.name }}<br />
-Test aktywny od {{ sheet.test_id.start_time }} do {{ sheet.test_id.end_time }}<br />
-Czas trwania testu: {{ sheet.test_id.time }} minut<br />
-<br />
+<div class="container">
+	<div id="confirmBox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+        <div class="panel panel-success">
+        	<div class="panel-heading"> <h4> Podejście do testu {{ sheet.test_id.name }} </h2></div>
+	        <div style="padding-top:15px" class="panel-body" >
+				<form class="form-horizontal-center">
+					<div style="margin-bottom: 25px" class="form-group">
+				    Test aktywny od <b>{{ sheet.test_id.start_time }}</b> do <b>{{ sheet.test_id.end_time }}</b><br>			
+				    Czas trwania testu: <b>{{ sheet.test_id.time }}</b> minut<br><br>
+				    Dane studenta <b>{{ sheet.student_id.first_name }} {{ sheet.student_id.last_name }}</b><br>
+				    Numer indeksu: <b>{{ sheet.student_id.index_number }}</b><br><br>
+				    Jeżeli wszystkie dane się zgadzają i chcesz przystąpić do testu kliknij <b>OK</b>. W przeciwnym razie kliknij <b>Powrót</b>.<br><br>
+				    <div class="text-center">
+				    	<a href="{% url 'sheet' sheet.id %}" class="btn btn-block btn-success" role="button">OK</a>
 
-Dane studenta {{ sheet.student_id.first_name }} {{ sheet.student_id.last_name }} # Nr indeksu: {{ sheet.student_id.index_number }}<br />
-
-Jeżeli wszystkie dane się zgadzają i chcesz przystąpić do testu kliknij OK. W przeciwnym razie kliknij Powrót.<br />
-
-<a href="{% url 'sheet' sheet.id  %}">OK</a>
-<br />
-<a href="{% url 'index' %}">Powrót</a>
-
+				    	<a href="{% url 'index' %}" class="btn btn-block btn-danger" role="button">Powrót</a>
+				    </div>
+				    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock content %}
