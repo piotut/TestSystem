@@ -183,10 +183,12 @@ class UploadFileView(View):
             test.name=self.get_test_name_from_file(test.id)
             test.save()
             msg = u'Poprawnie załadowano plik.'
+            request.session['msg'] = msg
+            return HttpResponseRedirect(reverse('tests'))
         else:
             msg = u'Wystąpił błąd podczas ładowania pliku.'
-        request.session['msg'] = msg
-        return HttpResponseRedirect(reverse('upload'))
+            request.session['msg'] = msg
+            return HttpResponseRedirect(reverse('upload'))
 
 
 class UserCreationView(View):
@@ -205,7 +207,7 @@ class UserCreationView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect("/")
+                    return HttpResponseRedirect(reverse('tests'))
         return HttpResponse('nie udalo sie zarejestrowac')
 
     def get(self, request):
