@@ -1,11 +1,18 @@
 {% extends "testownik/base.html" %}
 
 {% block content %}
-<ul>
+<table>
+<tr>
+	<td>Numer indeksu</td>
+	<td>Punkty</td>
+	<td>Arkusz</td>
+</tr>
 {% for sheet in object_list %}
-    <li>{{ sheet.student_id.index_number }}, <a href="{% url 'sheet' sheet.id %}">--></a></li>
-{% empty %}
-    <li>Brak testow stworzonych przez danego prowadzacego</li>
+<tr>
+	<td>{{ sheet.student_id.index_number }}</td>
+	<td>{% if sheet.points != None %} {{ sheet.points }}{% endif %}</td>
+	<td><a href="{% url 'sheet' sheet.id %}">Pokaz</a></td>
+</tr>
 {% endfor %}
-</ul>
+</table>
 {% endblock content %}

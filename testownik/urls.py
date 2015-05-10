@@ -14,6 +14,6 @@ urlpatterns = [
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': 'index'}, name='logout'),
     url(r'^create/$', UserCreationView.as_view(), name='create_user'),
     url(r'^pdf/([0-9]+)/([0-9]+)/$', PdfGeneratorView.as_view(), name='pdf'),
-    url(r'^tests/$', TestListView.as_view(), name='tests'),
-    url(r'^tests/list/([0-9]+)/$', SheetListView.as_view(), name='sheets'),
+    url(r'^tests/$', login_required(TestListView.as_view()), name='tests'),
+    url(r'^tests/list/([0-9]+)/$', login_required(SheetListView.as_view()), name='sheets'),
 ]

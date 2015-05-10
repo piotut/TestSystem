@@ -7,6 +7,8 @@
 
 </style>
 {% block content %}
+{{ msg }}
+
 <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 	{{ form.as_p }} 

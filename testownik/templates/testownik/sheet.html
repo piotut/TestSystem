@@ -19,7 +19,7 @@ text-align: center;
 <div>
     {{ student.first_name }} {{ student.last_name }}, {{ student.index_number }}
 </div>
-{% if msg_points > -1 %}
+{% if msg_points > -1 and not user.is_authenticated %}
 Zdobyles {{ msg_points }} punktow za ten test.
 {% else %}
 <div class="row">
@@ -34,7 +34,9 @@ Zdobyles {{ msg_points }} punktow za ten test.
 {{ formset.as_table }} 
 </div>
 {{ formset.management_form }}
+{% if not user.is_authenticated %}
     <input type="submit" value="Zapisz"/>
+{% endif %}
     </form>
 </div>
 {% endif %}

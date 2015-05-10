@@ -1,11 +1,18 @@
 {% extends "testownik/base.html" %}
 
 {% block content %}
-<ul>
+<table>
+<tr>
+    <td>Nazwa</td>
+    <td>Aktywny?</td>
+    <td>Arkusze</td>
+</tr>
 {% for test in object_list %}
-    <li>Aktywny: {{ test.is_active }}, Nazwa: {{ test.name }}, <a href="{% url 'sheets' test.id %}">--></a></li>
-{% empty %}
-    <li>Brak testow stworzonych przez danego prowadzacego</li>
+<tr>
+    <td>{{ test.name }}</td>
+    <td>{% if test.is_active %} Tak {% else %} Nie {% endif %}</td>
+    <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
+</tr>
 {% endfor %}
-</ul>
+</table>
 {% endblock content %}

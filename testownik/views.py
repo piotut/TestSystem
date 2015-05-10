@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from TestSystem.settings import MEDIA_DIR
 
 from django.shortcuts import render, get_object_or_404
@@ -100,9 +103,7 @@ class SheetView(View):
         questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
         AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
         formset = AnswerForm(sheet_id)
-        if sheet.points:
-            return render(request, self.template_name, {'msg_points': sheet.points})
-        return render(request, self.template_name, {'student': sheet.student_id, 'id': sheet_id, 'formset': formset})        
+        return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 'id': sheet_id, 'formset': formset})        
 
     def post(self, request, *args):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
@@ -151,12 +152,13 @@ class UploadFileView(View):
         m = match(regex, time).groups()
         return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         form = UploadFileForm()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'msg': request.session.get('msg', '')})
 
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
+        msg = ''
 
         if form.is_valid():
             test = Test(
@@ -167,8 +169,11 @@ class UploadFileView(View):
                 )
             test.save()
             self.handle_uploaded_file(test.id, request.FILES['file'])
-            return HttpResponse('zaladowano plik')
-        return HttpResponse('wystapil blad')
+            msg = u'Poprawnie załadowano plik.'
+        else:
+            msg = u'Wystąpił błąd podczas ładowania pliku.'
+        request.session['msg'] = msg
+        return HttpResponseRedirect(reverse('upload'))
 
 
 class UserCreationView(View):
