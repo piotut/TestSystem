@@ -36,24 +36,48 @@ class UploadFileForm(forms.Form):
     '''
     Forma do wyboru pliku.
     '''
-    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start'}))
-    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end'}))
-    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'id': 'time'}))
-    file = forms.FileField(label='Plik')
+    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}))
+    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
+    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))
+    file = forms.FileField(label='Plik', widget=forms.FileInput(attrs={'class': "form-control"}))
+
 
 class UserCreationForm(forms.Form):
     """
     A form that creates a user, with no privileges, from the given username and
     password.
     """
-    CHOICES = (('teacher', 'Prowadzacy',), ('supervisor', 'Nadzorca',))
+    CHOICES = (('teacher', 'Prowadzacy',), ('supervisor', 'Pracownik administracji',))
 
-    username = forms.CharField(label='Login', required=True)
-    first_name = forms.CharField(label='Imię', required=True)
-    last_name = forms.CharField(label='Nazwisko', required=True)
-    password1 = forms.CharField(label="Hasło", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Powtorz hasło", widget=forms.PasswordInput)
-    choice_field = forms.ChoiceField(label=u"Typ użytkownika", widget=forms.RadioSelect, choices=CHOICES, required=True)
+    username = forms.CharField(
+        label='Login',
+        required=True,
+        widget=forms.TextInput({'class': "form-control"}),
+        )
+    first_name = forms.CharField(
+        label='Imię',
+        required=True,
+        widget=forms.TextInput({'class': "form-control"})
+        )
+    last_name = forms.CharField(
+        label='Nazwisko',
+        required=True,
+        widget=forms.TextInput({'class': "form-control"})
+        )
+    password1 = forms.CharField(
+        label="Hasło",
+        widget=forms.PasswordInput({'class': "form-control"})
+        )
+    password2 = forms.CharField(
+        label="Powtorz hasło",
+        widget=forms.PasswordInput({'class': "form-control"})
+        )
+    choice_field = forms.ChoiceField(
+        label=u"Typ użytkownika",
+        widget=forms.RadioSelect(),
+        choices=CHOICES,
+        required=True,
+        )
 
     def save(self):
         user = User(

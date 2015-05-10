@@ -46,6 +46,7 @@ class IndexView(View):
                     else:
                         return HttpResponseRedirect(reverse('confirm', args=[sheet.id]))
             return HttpResponse('Brak aktywnego testu dla studenta o indeksie {}'.format(index))
+        return HttpResponse('Niepoprawny format numeru indeksu');
 
 
     def get(self, request):
@@ -103,7 +104,7 @@ class SheetView(View):
         questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
         AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
         formset = AnswerForm(sheet_id)
-        return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 'id': sheet_id, 'formset': formset})        
+        return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 'id': sheet_id, 'formset': formset, 'sheet': sheet})        
 
     def post(self, request, *args):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)
@@ -135,8 +136,8 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
-        os.system('unzip -o '+ filename +' -d '+dir+'/')
-        os.system('rm ' + filename)
+        os.system('unzip -o "'+ filename +'" -d '+dir+'/')
+        os.system('rm "' + filename + '"')
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):

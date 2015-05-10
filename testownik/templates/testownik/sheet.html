@@ -15,29 +15,68 @@ text-align: center;
 }
 {% endblock css %}
 
+{% block js%}
+
+var timeLeft=15*60;
+var counter;
+function cut(n){
+    return n > 9 ? "" + n: "0" + n;
+}
+function timer(){
+    timeLeft-=1;
+    document.getElementById("timer").innerHTML = cut(Math.floor(timeLeft/60)) + ":" + cut(timeLeft % 60);
+    if(timeLeft<=0)
+    {
+        clearInterval(counter);
+        alert("Czas minął! Twoje odpowiedzi zostaną zapisane do bazy");
+        document.getElementById("end_button").click();
+    }
+}
+{% endblock js%}
+
+
 {% block content %}
-<div>
-    {{ student.first_name }} {{ student.last_name }}, {{ student.index_number }}
-</div>
 {% if msg_points > -1 and not user.is_authenticated %}
-Zdobyles {{ msg_points }} punktow za ten test.
+<div class="alert alert-success" role="alert">
+Test został rozwiązany i zapisany. <br>
+Liczba zdobytych punktów: <b>{{ msg_points }}</b>
+</div>
 {% else %}
-<div class="row">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a><h4><b>{{ student.first_name }} {{ student.last_name }}</b></h4></a></li>
+
+                <li><a><h4><b>{{ student.index_number }}</b></h4></a></li>
+
+                <li><a><h4><b>{{ sheet.test_id.name }}</b></h4></a> </li>
+            </ul>
+            {% if not user.is_authenticated %}
+            <ul class="nav navbar-nav navbar-right">
+                <li><a><h4>Czas do końca testu : <b><span id="timer">--:--</span></b></h4></a> </li>
+            </ul>
+            {% endif %}
+        </div><!--/.nav-collapse -->
+    </nav>
+<div style="padding-top: 20px">
+<div class="row" style="position:relative;">
   <div class="col-md-8" id='pdf'>
     <object width="100%" height="800" type="application/pdf" data="/pdf/{{ student.index_number }}/{{ id }}" id="pdf_content">
     <p>Nie można wyświetlić arkusza PDF, sprawdź ustawienia przeglądarki.</p>
     </object>
     </div>
-  <div class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
+  <div style="max-height:100%;overflow:auto;" class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
 {% csrf_token %}
 <div id="answerscontainer">
 {{ formset.as_table }} 
 </div>
 {{ formset.management_form }}
 {% if not user.is_authenticated %}
-    <input type="submit" value="Zapisz"/>
+    <script>counter=setInterval(timer, 1000); </script>
+    <button id="end_button"class="btn btn-danger" type="submit">Zakończ test</button>
 {% endif %}
     </form>
 </div>
 {% endif %}
+</div>
 {% endblock content %}
