@@ -12,7 +12,8 @@
 				    Czas trwania testu: <b>{{ sheet.test_id.time }}</b> minut<br><br>
 				    Dane studenta <b>{{ sheet.student_id.first_name }} {{ sheet.student_id.last_name }}</b><br>
 				    Numer indeksu: <b>{{ sheet.student_id.index_number }}</b><br><br>
-				    Jeżeli wszystkie dane się zgadzają i chcesz przystąpić do testu kliknij <b>OK</b>. W przeciwnym razie kliknij <b>Powrót</b>.<br><br>
+				    Jeżeli wszystkie dane się zgadzają i chcesz przystąpić do testu kliknij <b>OK</b>.<br>
+				    W przeciwnym razie kliknij <b>Powrót</b>.<br><br>
 				    <div class="text-center">
 				    	<a href="{% url 'sheet' sheet.id %}" class="btn btn-block btn-success" role="button">OK</a>
 
