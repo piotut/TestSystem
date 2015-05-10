@@ -36,7 +36,6 @@ class UploadFileForm(forms.Form):
     '''
     Forma do wyboru pliku.
     '''
-    name = forms.CharField(label='Nazwa testu', max_length=50)
     start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start'}))
     end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end'}))
     file = forms.FileField(label='Plik')

@@ -147,6 +147,16 @@ class UploadFileView(View):
         s = SaveDBF(MEDIA_DIR)
         s.save_test(testId)
 
+    def get_test_name_from_file(self, test_id):
+        description_filename = "opisTestu.txt"
+        description_path = os.path.join(MEDIA_DIR, str(test_id), description_filename)
+        print description_path
+        
+        with open(description_path, 'r') as description_file:
+            lines = description_file.read().splitlines()
+            test_name = lines[0].split('= ')[1]
+            return test_name
+
     def convert_time(self, time):
         regex = '([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2})'
         m = match(regex, time).groups()
@@ -162,13 +172,14 @@ class UploadFileView(View):
 
         if form.is_valid():
             test = Test(
-                name=form.cleaned_data['name'],
                 start_time = self.convert_time(form.cleaned_data['start']),
                 end_time = self.convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id)
                 )
             test.save()
             self.handle_uploaded_file(test.id, request.FILES['file'])
+            test.name=self.get_test_name_from_file(test.id)
+            test.save()
             msg = u'Poprawnie załadowano plik.'
         else:
             msg = u'Wystąpił błąd podczas ładowania pliku.'
