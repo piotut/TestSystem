@@ -50,7 +50,7 @@ class IndexView(View):
                     if sheet.points != None:
                         return render(request, 'testownik/sheet.html', {'msg_points': sheet.points})
                     else:
-                        return HttpResponseRedirect(reverse('sheet', args=[sheet.id]))
+                        return HttpResponseRedirect(reverse('confirm', args=[sheet.id]))
             return HttpResponse('Brak aktywnego testu dla studenta o indeksie {}'.format(index))
         return HttpResponse('Niepoprawny format numeru indeksu');
 
@@ -142,14 +142,14 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
-        os.system('unzip -o '+ filename +' -d '+dir+'/')
-        os.system('rm ' + filename)
+        os.system('unzip -o "'+ filename +'" -d "'+dir+'"/')
+        os.system('rm "' + filename + '"')
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):
                 matchDir = root
 
-        os.system('mv --force '+ matchDir +'/* ' +dir)
+        os.system('mv --force "'+ matchDir +'"/* "' +dir+'"')
 
         s = SaveDBF(MEDIA_DIR)
         s.save_test(testId)
@@ -255,4 +255,14 @@ class SheetListView(ListView):
 
     def get_queryset(self, *args):
         return Sheet.objects.filter(test_id__id=self.args[0])
+
+class ConfirmTestStartView(View):
+    '''
+    Strona sluzaca do pobrania decyzji studenta czy chce przystapic do testu
+    '''
+    template_name = 'testownik/confirm.html'
+
+    def get(self, request, *args):
+        sheet = Sheet.objects.get(id=args[0])
+        return render(request, self.template_name, {'sheet': sheet})
 
