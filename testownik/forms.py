@@ -11,15 +11,25 @@ class LoginForm(forms.Form):
     '''
     Forma wykozrystywana do logowania uzytkownika (prowadzacego).
     '''
-    username = forms.CharField(label='login', max_length=30)
-    password = forms.CharField(label='haslo:', widget=forms.PasswordInput())
+    username = forms.CharField(
+        label='Login',
+        max_length=30,
+        widget=forms.TextInput({'class': "form-control"}),
+    )
+    password = forms.CharField(
+        label='Hasło:',
+        widget=forms.PasswordInput({'class': "form-control"}),
+    )
 
 
 class StudentForm(forms.Form):
     '''
     Forma do wprowadzenia nr indeksu studenta.
     '''
-    index = forms.IntegerField(label='nr_indeksu')
+    index = forms.IntegerField(
+        label='Numer indeksu',
+        widget=forms.NumberInput({'class': "form-control"}),
+        )
 
 
 class UploadFileForm(forms.Form):
