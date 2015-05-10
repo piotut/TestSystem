@@ -155,7 +155,8 @@ class UploadFileView(View):
         with open(description_path, 'r') as description_file:
             lines = description_file.read().splitlines()
             test_name = lines[0].split('= ')[1]
-            return test_name
+            name_string = "%s (%s)" % (test_name, datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+            return name_string
 
     def convert_time(self, time):
         regex = '([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2})'
@@ -174,7 +175,8 @@ class UploadFileView(View):
             test = Test(
                 start_time = self.convert_time(form.cleaned_data['start']),
                 end_time = self.convert_time(form.cleaned_data['end']),
-                author_id = UserProfile.objects.get(user__id=request.user.id)
+                author_id = UserProfile.objects.get(user__id=request.user.id),
+                time = int(form.cleaned_data['time'])
                 )
             test.save()
             self.handle_uploaded_file(test.id, request.FILES['file'])

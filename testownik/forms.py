@@ -38,6 +38,7 @@ class UploadFileForm(forms.Form):
     '''
     start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start'}))
     end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end'}))
+    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'id': 'time'}))
     file = forms.FileField(label='Plik')
 
 class UserCreationForm(forms.Form):
