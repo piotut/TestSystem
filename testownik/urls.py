@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import IndexView, LoginView, SheetView, UploadFileView, UserCreationView, PdfGeneratorView, TestListView, SheetListView
+from .views import IndexView, LoginView, SheetView, UploadFileView, UserCreationView, PdfGeneratorView, TestListView, SheetListView, ConfirmTestStartView
 from django.views.generic import TemplateView
 
 from django.contrib.auth.decorators import login_required
@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^pdf/([0-9]+)/([0-9]+)/$', PdfGeneratorView.as_view(), name='pdf'),
     url(r'^tests/$', login_required(TestListView.as_view()), name='tests'),
     url(r'^tests/list/([0-9]+)/$', login_required(SheetListView.as_view()), name='sheets'),
+    url(r'^confirm/([0-9]+)/$', ConfirmTestStartView.as_view(), name='confirm'),
 ]
