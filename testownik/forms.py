@@ -115,3 +115,11 @@ class AnswersFormSet(BaseFormSet):
             for sq in query:
                 self[sq.order_number-1].fields['choice_field'].label += " {}".format(sq.order_number)
                 self[sq.order_number-1].fields['choice_field'].choices = CHOICES[:len(sq.answer_order)]
+
+class EditTestForm(forms.Form):
+    '''
+    Forma do wyboru pliku.
+    '''
+    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}))
+    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
+    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))

@@ -15,7 +15,7 @@ from django.views.generic import View, DetailView, ListView
 from django.contrib.auth.models import User
 from models import Student, Sheet, SheetQuestions, Test, UserProfile
 
-from forms import UserCreationForm
+from forms import UserCreationForm, EditTestForm
 from forms import LoginForm, StudentForm, UploadFileForm, AnswersForm, AnswersFormSet
 from django.forms.formsets import formset_factory
 
@@ -26,6 +26,12 @@ import fnmatch
 
 from SaveDBF import SaveDBF
 from TestResults import TestResults
+
+
+def convert_time(time):
+    regex = '([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2})'
+    m = match(regex, time).groups()
+    return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
 
 class IndexView(View):
     '''
@@ -85,7 +91,7 @@ class PdfGeneratorView(View):
         test, sheet_number = Sheet.objects.get_test_and_sheet_number(self.args[0])
         fileh = 'testy_pdf/zestaw{}.pdf'.format(sheet_number)
         filename = os.path.join(MEDIA_DIR, str(test.id), str(fileh))
-
+        print 'test'
         with open(filename, 'r') as pdf:
             response = HttpResponse(pdf.read(), content_type='application/pdf')
             response['Content-Disposition'] = 'inline;filename=some_file.pdf'
@@ -159,14 +165,9 @@ class UploadFileView(View):
             name_string = "%s (%s)" % (test_name, datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
             return name_string
 
-    def convert_time(self, time):
-        regex = '([0-9]{4})/([0-9]{2})/([0-9]{2}) ([0-9]{2}):([0-9]{2})'
-        m = match(regex, time).groups()
-        return datetime(int(m[0]), int(m[1]), int(m[2]), int(m[3]), int(m[4]), 0)
-
     def get(self, request, *args, **kwargs):
         form = UploadFileForm()
-        return render(request, self.template_name, {'form': form, 'msg': request.session.get('msg', '')})
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
@@ -174,22 +175,20 @@ class UploadFileView(View):
 
         if form.is_valid():
             test = Test(
-                start_time = self.convert_time(form.cleaned_data['start']),
-                end_time = self.convert_time(form.cleaned_data['end']),
+                start_time = convert_time(form.cleaned_data['start']),
+                end_time = convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id),
                 time = int(form.cleaned_data['time'])
                 )
             test.save()
             self.handle_uploaded_file(test.id, request.FILES['file'])
-            test.name=self.get_test_name_from_file(test.id)
+            test.name = self.get_test_name_from_file(test.id)
             test.save()
-            msg = u'Poprawnie załadowano plik.'
-            request.session['msg'] = msg
             return HttpResponseRedirect(reverse('tests'))
         else:
-            msg = u'Wystąpił błąd podczas ładowania pliku.'
-            request.session['msg'] = msg
-            return HttpResponseRedirect(reverse('upload'))
+            msg = {'error': u'Wystąpił błąd podczas ładowania pliku.'}
+            form = UploadFileForm()
+            return render(request, self.template_name, {'form': form, 'msg': msg})
 
 
 class UserCreationView(View):
@@ -216,14 +215,37 @@ class UserCreationView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class TestListView(ListView):
+class TestListView(View):
     '''
     Lista testow prowadzacego wraz z informacjami o nich
     '''
     template_name = 'testownik/tests.html'
+    my_form = EditTestForm
 
-    def get_queryset(self, *args):
-        return Test.objects.filter(author_id__user=self.request.user)
+    def post(self, request):
+        form = self.my_form(request.POST)
+
+        msg = {'error': u"Wystąpił błąd przy próbie edytowania testu."}
+        if form.is_valid():
+            try:
+                t = Test.objects.get(id=request.POST['test_id'])
+                t.start_time = convert_time(form.cleaned_data['start'])
+                t.end_time = convert_time(form.cleaned_data['end'])
+                t.time = form.cleaned_data['time']
+                t.save()
+            except:
+                pass
+            else:
+                msg = {'correct': u"Zmieniono test: {}".format(t.name)}
+            
+        tests_list = Test.objects.filter(author_id__user=request.user)
+
+        return render(request, self.template_name, {'form': form, 'object_list': tests_list, 'msg':msg})
+
+    def get(self, request):
+        form = self.my_form()
+        tests_list = Test.objects.filter(author_id__user=request.user)
+        return render(request, self.template_name, {'form': form, 'object_list': tests_list})
 
 class SheetListView(ListView):
     '''
@@ -233,3 +255,4 @@ class SheetListView(ListView):
 
     def get_queryset(self, *args):
         return Sheet.objects.filter(test_id__id=self.args[0])
+

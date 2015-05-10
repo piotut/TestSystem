@@ -1,10 +1,27 @@
 {% extends "testownik/base.html" %}
 
+{% block js %}
+$(document).ready(function(){
+    $('tr[id^="edit_tr"]').hide()
+     $("button").click(function(event) {
+        var id = "#edit_tr"+event.target.id
+        $(id).toggle()
+    });
+});
+{% endblock js %}
+
 {% block content %}
+{% if msg.error %}
+	<div class="alert alert-danger" role="alert">{{ msg.error }}</div>
+{% elif msg.correct %}
+	<div class="alert alert-success" role="alert">{{ msg.correct }}</div>
+{% endif %}
 <table class="table table-striped table-bordered table-hover">
 <tr>
     <td>Nazwa</td>
     <td>Aktywny</td>
+    <td>Czas startu</td>
+    <td>Czas końca</td>
     <td>Arkusze</td>
     <td>Edytuj</td>
 </tr>
@@ -12,9 +29,41 @@
 <tr>
     <td>{{ test.name }}</td>
     <td>{% if test.is_active %} Tak {% else %} Nie {% endif %}</td>
+    <td>{{ test.start_time }}</td>
+    <td>{{ test.end_time }}</td>
     <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
-    <td><a href="{% url 'sheets' test.id %}">Edytuj</a></td>
+    <td><button id="{{ test.id }}">Edytuj</a></td>
+</tr>
+<tr id="edit_tr{{ test.id }}"><td>
+    <form id="{{ test.id }}"action="{% url 'tests' %}" method="post" enctype="multipart/form-data">
+    	{% csrf_token %}
+    	{{ form.as_p }} 
+    	<button type="submit" name="test_id" value="{{ test.id }}">Zmień</button>
+    </form>
+    </td>
 </tr>
 {% endfor %}
 </table>
 {% endblock content %}
+
+{% block jsend %}
+<script>
+    var currentDate = new Date()
+    var day = currentDate.getDate()
+    var month = currentDate.getMonth() + 1
+    var year = currentDate.getFullYear()
+    var fullDate = year + "/" + month + "/" + day
+
+$('[id^="start"]').datetimepicker({
+dayOfWeekStart : 1,
+lang:'pl',
+startDate:	fullDate
+});
+$('[id^="end"]').datetimepicker({
+dayOfWeekStart : 1,
+lang:'pl',
+startDate:	fullDate
+});
+
+</script>
+{% endblock jsend %}
