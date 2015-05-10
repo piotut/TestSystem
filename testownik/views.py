@@ -136,14 +136,14 @@ class UploadFileView(View):
         with open(filename, 'wb+') as destination:
             for chunk in fileh.chunks():
                 destination.write(chunk)
-        os.system('unzip -o "'+ filename +'" -d '+dir+'/')
+        os.system('unzip -o "'+ filename +'" -d "'+dir+'"/')
         os.system('rm "' + filename + '"')
 
         for root, dirnames, filenames in os.walk(dir):
             for filename in fnmatch.filter(filenames, 'testy.dbf'):
                 matchDir = root
 
-        os.system('mv --force '+ matchDir +'/* ' +dir)
+        os.system('mv --force "'+ matchDir +'"/* "' +dir+'"')
 
         s = SaveDBF(MEDIA_DIR)
         s.save_test(testId)
