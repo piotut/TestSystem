@@ -108,7 +108,8 @@ class SheetView(View):
         answers = TestAnswers(sheet_id)
         list_answers = answers.get_answers()
 
-        if request.META.get('REMOTE_ADDR') in [x.ip for x in IP.objects.filter(room=sheet.test_id.room)] or request.user.is_authenticated():
+        ips = IP.objects.filter(room=sheet.test_id.room)
+        if request.META.get('REMOTE_ADDR') in [x.ip for x in ips] or request.user.is_authenticated() or not ips:
             return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 
             'id': sheet_id, 'formset': formset, 'sheet': sheet, 'answers': list_answers })
         else:
@@ -182,7 +183,7 @@ class UploadFileView(View):
                 end_time = convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id),
                 time = int(form.cleaned_data['time']),
-                room = Room.objects.get(id=form.cleaned_data['room'])
+                room = Room.objects.get(id=form.cleaned_data.get('room', ''))
                 )
             test.save()
             self.handle_uploaded_file(test.id, request.FILES['file'])
@@ -268,8 +269,9 @@ class ConfirmTestStartView(View):
 
     def get(self, request, *args):
         sheet = Sheet.objects.get(id=args[0])
-        print request.META.get('REMOTE_ADDR')
-        if request.META.get('REMOTE_ADDR') in [x.ip for x in IP.objects.filter(room=sheet.test_id.room)] or request.user.is_authenticated():
+        
+        ips = IP.objects.filter(room=sheet.test_id.room)
+        if request.META.get('REMOTE_ADDR') in [x.ip for x in ips] or request.user.is_authenticated() or not ips:
             return render(request, self.template_name, {'sheet': sheet})
         else:
             return render(request, 'testownik/error.html', {'error_text': 'Adres IP, z którego próbujesz się połączyć jest błędny!'})
