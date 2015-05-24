@@ -41,7 +41,7 @@ class UploadFileForm(forms.Form):
     end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
     time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))
     file = forms.FileField(label='Plik', widget=forms.FileInput(attrs={'class': "form-control"}))
-    room = forms.ChoiceField(label='Sala', choices=[(r.id, r.name) for r in Room.objects.all()])
+    room = forms.ChoiceField(label='Sala', choices=[(r.id, r.name) for r in Room.objects.all()], required=False)
 
 
 class UserCreationForm(forms.Form):

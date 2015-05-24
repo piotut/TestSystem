@@ -181,14 +181,23 @@ class UploadFileView(View):
         msg = ''
 
         if form.is_valid():
+            try:
+                r = Room.objects.get(id=form.cleaned_data.get('room'))
+            except:
+                r = ''
             test = Test(
                 start_time = convert_time(form.cleaned_data['start']),
                 end_time = convert_time(form.cleaned_data['end']),
                 author_id = UserProfile.objects.get(user__id=request.user.id),
-                time = int(form.cleaned_data['time']),
-                room = Room.objects.get(id=form.cleaned_data.get('room', ''))
+                time = int(form.cleaned_data['time'])
                 )
             test.save()
+            try:
+                test.room = Room.objects.get(id=form.cleaned_data.get('room'))
+                test.save()
+            except:
+                pass
+
             try:
                 self.handle_uploaded_file(test.id, request.FILES['file'])
             except:
