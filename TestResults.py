@@ -7,7 +7,6 @@ class TestResults(object):
     def __init__(self, answers, sheet_id):
         self.answers = answers
         self.sheet_id = sheet_id
-        print sheet_id
         self.save_results()
 
     def get_sheet_obj(self):
@@ -60,21 +59,30 @@ class TestResults(object):
             res.save()
 
         self.compare_results_and_questions(sheet)
-    
+
+    def _return_points_for_question(self, q_points, res):
+        if not q_points and res:
+            return -1
+        else:
+            return q_points * res
+
+
     def compare_results_and_questions(self, sheet):
         res_list = Results.objects.filter(sheet_id=sheet)
-        print sheet
         self.points = 0
-        for res in res_list:
-            self.points += res.question_id.a_points * res.a
-            self.points += res.question_id.b_points * res.b
-            self.points += res.question_id.c_points * res.c
-            self.points += res.question_id.d_points * res.d
-            self.points += res.question_id.e_points * res.e
-            self.points += res.question_id.f_points * res.f
 
-        print self.points
+        for res in res_list:
+            points = 0
+
+            points += self._return_points_for_question(res.question_id.a_points, res.a)
+            points += self._return_points_for_question(res.question_id.b_points, res.b)
+            points += self._return_points_for_question(res.question_id.c_points, res.c)
+            points += self._return_points_for_question(res.question_id.d_points, res.d)
+            points += self._return_points_for_question(res.question_id.e_points, res.e)
+            points += self._return_points_for_question(res.question_id.f_points, res.f)
+
+            self.points += points if points > 0 else 0 
+
         sheet.points = self.points
-        print sheet.points
         sheet.save()
         
