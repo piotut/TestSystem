@@ -68,7 +68,7 @@ class Test(models.Model):
     end_time = models.DateTimeField()
     author_id = models.ForeignKey(UserProfile)
     time = models.SmallIntegerField(null=True)
-    room = models.ForeignKey(Room)
+    room = models.ForeignKey(Room, null=True)
 
     def __unicode__(self):
         return "{}, {}".format(self.name, self.author_id)
