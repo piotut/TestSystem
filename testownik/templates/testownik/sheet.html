@@ -52,7 +52,7 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
                 <li><a><h4><b>{{ sheet.test_id.name }}</b></h4></a> </li>
             </ul>
             {% if not user.is_authenticated %}
-            <ul class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-right">
                 <li><a><h4>Czas do końca testu : <b><span id="timer">--:--</span></b></h4></a> </li>
             </ul>
             {% endif %}
@@ -65,18 +65,20 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
     <p>Nie można wyświetlić arkusza PDF, sprawdź ustawienia przeglądarki.</p>
     </object>
     </div>
+    {% if msg_points > -1 %}
+    rozwiazany
+    {% else %}
   <div style="max-height:100%;overflow:auto;" class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
 {% csrf_token %}
 <div id="answerscontainer">
 {{ formset.as_table }} 
 </div>
 {{ formset.management_form }}
-{% if not user.is_authenticated %}
     <script>counter=setInterval(timer, 1000); </script>
     <button id="end_button"class="btn btn-danger" type="submit">Zakończ test</button>
-{% endif %}
     </form>
 </div>
+    {% endif %}
 {% endif %}
 </div>
 {% endblock content %}
