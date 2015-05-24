@@ -45,8 +45,8 @@ class IndexView(View):
                         return render(request, 'testownik/sheet.html', {'msg_points': sheet.points})
                     else:
                         return HttpResponseRedirect(reverse('confirm', args=[sheet.id]))
-            return HttpResponse('Brak aktywnego testu dla studenta o indeksie {}'.format(index))
-        return HttpResponse('Niepoprawny format numeru indeksu');
+                return render(request, 'testownik/error.html', {'error_text': 'Dla studenta o numerze indeksu ' + str(index) + " nie ma aktywnego testu!"})
+        return render(request, 'testownik/error.html', {'error_text': 'Niepoprawny numer indeksu!'})
 
 
     def get(self, request):
@@ -70,7 +70,7 @@ class LoginView(View):
                 if user.is_active:
                     login(request, user)
                     return HttpResponseRedirect(reverse('upload'))
-        return HttpResponse('Nie udalo sie zalogowac')
+        return render(request, 'testownik/error.html', {'error_text': 'Wystąpił błąd podczas próby logowania!'})
 
     def get(self, request):
         form = LoginForm()
@@ -116,7 +116,7 @@ class SheetView(View):
             result = TestResults(formset.cleaned_data, args[0])
             return render(request, self.template_name, {'msg_points': result.points})
         #print formset.errors
-        return HttpResponse('Blednie wypelniona forma')
+        return render(request, 'testownik/error.html', {'error_text': 'Błędnie wypełniona forma!'})
 
 
 class UploadFileView(View):
@@ -202,7 +202,7 @@ class UserCreationView(View):
                 if user.is_active:
                     login(request, user)
                     return HttpResponseRedirect(reverse('tests'))
-        return HttpResponse('nie udalo sie zarejestrowac')
+        return render(request, 'testownik/error.html', {'error_text': 'Nie udało się zarejestrować!'})
 
     def get(self, request):
         form = UserCreationForm()
@@ -259,4 +259,3 @@ class ConfirmTestStartView(View):
     def get(self, request, *args):
         sheet = Sheet.objects.get(id=args[0])
         return render(request, self.template_name, {'sheet': sheet})
-
