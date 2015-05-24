@@ -110,10 +110,6 @@ class SheetView(View):
 
         ips = IP.objects.filter(room=sheet.test_id.room)
         if request.META.get('REMOTE_ADDR') in [x.ip for x in ips] or request.user.is_authenticated() or not ips:
-            if sheet.start_time==None:
-                sheet.start_time=datetime.now()
-                sheet.save()
-
             return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 
             'id': sheet_id, 'formset': formset, 'sheet': sheet, 'answers': list_answers })
         else:
@@ -190,9 +186,13 @@ class UploadFileView(View):
                 room = Room.objects.get(id=form.cleaned_data.get('room', ''))
                 )
             test.save()
-            self.handle_uploaded_file(test.id, request.FILES['file'])
-            test.name = self.get_test_name_from_file(test.id)
-            test.save()
+            try:
+                self.handle_uploaded_file(test.id, request.FILES['file'])
+            except:
+                test.delete()
+            else:
+                test.name = self.get_test_name_from_file(test.id)
+                test.save()
             return HttpResponseRedirect(reverse('tests'))
         else:
             msg = {'error': u'Wystąpił błąd podczas ładowania pliku.'}
