@@ -106,6 +106,7 @@ class TestAnswers(object):
             #print sq.answer_order
             #print res.a, res.b, res.c, res.d
             answers = ''
+            correct = ''
             if res.a:
                 answers += map_answer[order.index('1')]
             if res.b:
@@ -118,6 +119,20 @@ class TestAnswers(object):
                 answers += map_answer[order.index('5')]
             if res.f:
                 answers += map_answer[order.index('6')]
-            response.append(answers)
+
+            if res.question_id.a_points:
+                correct += map_answer[order.index('1')]
+            if res.question_id.b_points:
+                correct += map_answer[order.index('2')]
+            if res.question_id.c_points:
+                correct += map_answer[order.index('3')]
+            if res.question_id.d_points:
+                correct += map_answer[order.index('4')]
+            if res.question_id.e_points:
+                correct += map_answer[order.index('5')]
+            if res.question_id.f_points:
+                correct += map_answer[order.index('6')]
+            
+            response.append({'answers': answers, 'correct': correct})
 
         return response

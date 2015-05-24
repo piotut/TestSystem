@@ -66,11 +66,25 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
     </object>
     </div>
     {% if msg_points > -1 %}
-        Odpowiedzi udzielone przez studenta:
-        {% for answer in answers %}
-        <br><br>Pytanie {{ forloop.counter }}:
-        <br>Odpowiedzi: {{ answer }}
-        {% endfor %}
+    <div style="max-height:100%;overflow:auto;" class="col-md-3">
+    <div class="alert alert-success" role="alert">
+    Liczba zdobytych punktów: <b>{{ msg_points }}</b>
+    </div>
+    <table class="table table-striped table-bordered table-hover">
+        <tr>
+            <td>Pytanie</td>
+            <td>Odpowiedzi</td>
+            <td>Poprawne</td>
+        </tr>
+    {% for answer in answers %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ answer.answers }}</td>
+            <td>{{ answer.correct }}</td>
+        </tr>
+    {% endfor %}
+    </table>   
+    </div> 
     {% else %}
   <div style="max-height:100%;overflow:auto;" class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
 {% csrf_token %}
