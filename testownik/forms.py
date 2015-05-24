@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from models import UserProfile
+from models import UserProfile, Room
 from django.contrib.auth.models import User
 from django.forms.formsets import BaseFormSet
 from django.contrib.admin.widgets import AdminDateWidget
@@ -36,10 +36,12 @@ class UploadFileForm(forms.Form):
     '''
     Forma do wyboru pliku.
     '''
+
     start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}))
     end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
     time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))
     file = forms.FileField(label='Plik', widget=forms.FileInput(attrs={'class': "form-control"}))
+    room = forms.ChoiceField(label='Sala', choices=[(r.id, r.name) for r in Room.objects.all()])
 
 
 class UserCreationForm(forms.Form):

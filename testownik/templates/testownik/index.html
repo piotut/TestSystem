@@ -36,6 +36,8 @@
 
 </div>
 {% else %}
-Jesteś zalogowany jako {{ user.username }}.
+    <div class="alert alert-success" role="alert">
+    Liczba zdobytych punktów: <b>{{ user.username }}</b>
+    </div>
 {% endif %}
 {% endblock content %}

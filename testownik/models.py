@@ -39,12 +39,36 @@ class Question(models.Model):
     f_points = models.SmallIntegerField(null=True)
 
 
+class Room(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = u"Sala"
+        verbose_name_plural = u"Sale"
+
+
+class IP(models.Model):
+    room = models.ForeignKey(Room)
+    ip = models.CharField(max_length=15)
+
+    def __unicode__(self):
+        return "{} ({})".format(self.ip, self.room)
+
+    class Meta:
+        verbose_name = u"Adres IP"
+        verbose_name_plural = u"Adresy IP"
+
+
 class Test(models.Model):
     name = models.CharField(max_length=100, default='')
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     author_id = models.ForeignKey(UserProfile)
     time = models.SmallIntegerField(null=True)
+    room = models.ForeignKey(Room)
 
     def __unicode__(self):
         return "{}, {}".format(self.name, self.author_id)
