@@ -72,6 +72,7 @@ class Sheet(models.Model):
     student_id = models.ForeignKey(Student)
     sheet_number = models.SmallIntegerField()
     points = models.SmallIntegerField(null=True)
+    start_time = models.DateTimeField(null=True, default=None)
 
     def __unicode__(self):
         return "{}, {}".format(self.student_id.index_number, self.test_id.name)
