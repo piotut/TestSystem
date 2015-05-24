@@ -109,6 +109,9 @@ class SheetView(View):
         list_answers = answers.get_answers()
 
         if request.META.get('REMOTE_ADDR') in [x.ip for x in IP.objects.filter(room=sheet.test_id.room)] or request.user.is_authenticated():
+            if sheet.start_time==None:
+                sheet.start_time=datetime.now()
+                sheet.save()
             return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 
             'id': sheet_id, 'formset': formset, 'sheet': sheet, 'answers': list_answers })
         else:
