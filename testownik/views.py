@@ -24,7 +24,7 @@ import os
 import fnmatch
 
 from SaveDBF import SaveDBF
-from TestResults import TestResults
+from TestResults import TestResults, TestAnswers
 from commons import convert_time
 
 class IndexView(View):
@@ -104,7 +104,12 @@ class SheetView(View):
         questions_no = len(SheetQuestions.objects.filter(sheet_id=sheet_id))
         AnswerForm = formset_factory(AnswersForm, extra=questions_no, formset=AnswersFormSet)
         formset = AnswerForm(sheet_id)
-        return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 'id': sheet_id, 'formset': formset, 'sheet': sheet})        
+        
+        answers = TestAnswers(sheet_id)
+        list_answers = answers.get_answers()
+
+        return render(request, self.template_name, {'msg_points': sheet.points, 'student': sheet.student_id, 
+            'id': sheet_id, 'formset': formset, 'sheet': sheet, 'answers': list_answers })        
 
     def post(self, request, *args):
         AnswerForm = formset_factory(AnswersForm, formset=AnswersFormSet)

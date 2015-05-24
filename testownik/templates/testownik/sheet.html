@@ -66,7 +66,11 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
     </object>
     </div>
     {% if msg_points > -1 %}
-    rozwiazany
+        Odpowiedzi udzielone przez studenta:
+        {% for answer in answers %}
+        <br><br>Pytanie {{ forloop.counter }}:
+        <br>Odpowiedzi: {{ answer }}
+        {% endfor %}
     {% else %}
   <div style="max-height:100%;overflow:auto;" class="col-md-3"><form action="{% url 'sheet' id %}" method="post">
 {% csrf_token %}

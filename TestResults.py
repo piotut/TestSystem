@@ -61,6 +61,9 @@ class TestResults(object):
         self.compare_results_and_questions(sheet)
 
     def _return_points_for_question(self, q_points, res):
+
+
+
         if not q_points and res:
             return -1
         else:
@@ -85,4 +88,36 @@ class TestResults(object):
 
         sheet.points = self.points
         sheet.save()
-        
+    
+
+class TestAnswers(object):
+    "Odpowiedzi udzielone przez studenta"
+    def __init__(self, sheet_id):
+        self.sheet_id = sheet_id
+
+    def get_answers(self):
+        map_answer = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F'}
+        sheet = Sheet.objects.get(id=self.sheet_id)
+        results = Results.objects.filter(sheet_id=sheet)
+        response = []
+        for res in results:
+            sq = SheetQuestions.objects.get(question_id=res.question_id, sheet_id=sheet)
+            order = list(sq.answer_order)
+            #print sq.answer_order
+            #print res.a, res.b, res.c, res.d
+            answers = ''
+            if res.a:
+                answers += map_answer[order.index('1')]
+            if res.b:
+                answers += map_answer[order.index('2')]
+            if res.c:
+                answers += map_answer[order.index('3')]
+            if res.d:
+                answers += map_answer[order.index('4')]
+            if res.e:
+                answers += map_answer[order.index('5')]
+            if res.f:
+                answers += map_answer[order.index('6')]
+            response.append(answers)
+
+        return response
