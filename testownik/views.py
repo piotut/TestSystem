@@ -111,10 +111,11 @@ class SheetView(View):
         formset = AnswerForm(0, request.POST, request.FILES)
         sheet = Sheet.objects.get(id=args[0])
         if formset.is_valid():
-            if sheet.points != None:
-                return render(request, self.template_name, {'msg_points': sheet.points})
-            result = TestResults(formset.cleaned_data, args[0])
-            return render(request, self.template_name, {'msg_points': result.points})
+            if sheet.points == None:
+                #return render(request, self.template_name, {'msg_points': sheet.points})
+                result = TestResults(formset.cleaned_data, args[0])
+            #return render(request, self.template_name, {'msg_points': result.points})
+            return HttpResponseRedirect(reverse('sheet', args=[args[0]]))
         #print formset.errors
         return HttpResponse('Blednie wypelniona forma')
 
