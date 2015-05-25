@@ -181,10 +181,6 @@ class UploadFileView(View):
         msg = ''
 
         if form.is_valid():
-            try:
-                r = Room.objects.get(id=form.cleaned_data.get('room'))
-            except:
-                r = ''
             test = Test(
                 start_time = convert_time(form.cleaned_data['start']),
                 end_time = convert_time(form.cleaned_data['end']),
@@ -258,6 +254,15 @@ class TestListView(View):
                 pass
             else:
                 msg = {'correct': u"Zmieniono test: {}".format(t.name)}
+            try:
+                t = Test.objects.get(id=request.POST['test_id'])
+                t.room = form.cleaned_data['room']
+                t.save()
+            except:
+                pass
+            else:
+                msg = {'correct': u"Zmieniono test: {}".format(t.name)}
+
             
         tests_list = Test.objects.filter(author_id__user=request.user)
 
