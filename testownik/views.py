@@ -256,7 +256,7 @@ class TestListView(View):
                 msg = {'correct': u"Zmieniono test: {}".format(t.name)}
             try:
                 t = Test.objects.get(id=request.POST['test_id'])
-                t.room = form.cleaned_data['room']
+                t.room = Room.objects.get(id=form.cleaned_data['room'])
                 t.save()
             except:
                 pass
