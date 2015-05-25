@@ -187,7 +187,6 @@ class UploadFileView(View):
     def get_test_name_from_file(self, test_id):
         description_filename = "opisTestu.txt"
         description_path = os.path.join(MEDIA_DIR, str(test_id), description_filename)
-        print description_path
         
         with open(description_path, 'r') as description_file:
             lines = description_file.read().splitlines()
