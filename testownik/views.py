@@ -45,7 +45,7 @@ class IndexView(View):
                         return render(request, 'testownik/sheet.html', {'msg_points': sheet.points})
                     else:
                         return HttpResponseRedirect(reverse('confirm', args=[sheet.id]))
-                return render(request, 'testownik/error.html', {'error_text': 'Dla studenta o numerze indeksu ' + str(index) + " nie ma aktywnego testu!"})
+            return render(request, 'testownik/error.html', {'error_text': 'Dla studenta o numerze indeksu ' + str(index) + " nie ma aktywnego testu!"})
         return render(request, 'testownik/error.html', {'error_text': 'Niepoprawny numer indeksu!'})
 
 
@@ -279,7 +279,7 @@ class TestListView(View):
                 msg = {'correct': u"Zmieniono test: {}".format(t.name)}
             try:
                 t = Test.objects.get(id=request.POST['test_id'])
-                t.room = form.cleaned_data['room']
+                t.room = Room.objects.get(id=form.cleaned_data['room'])
                 t.save()
             except:
                 pass

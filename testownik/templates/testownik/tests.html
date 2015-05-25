@@ -32,7 +32,7 @@ $(document).ready(function(){
     <td>{% if test.is_active %} Tak {% else %} Nie {% endif %}</td>
     <td>{{ test.start_time }}</td>
     <td>{{ test.end_time }}</td>
-    <td>{% if test.room %} {{ test.room }} {% else %} {% endif %}</td>
+    <td>{% if test.room %} {{ test.room.name }} {% else %} {% endif %}</td>
     <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
     <td><button id="{{ test.id }}">Edytuj</a></td>
 </tr>
