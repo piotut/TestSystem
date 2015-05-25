@@ -8,13 +8,15 @@ from testownik.models import Student, Test, Sheet, SheetQuestions, Question
 import os
 
 class SaveDBF():
-    def __init__(self, MEDIA_DIR, testy_dbf_filename="testy.dbf", zestawy_dbf_filename="zestawy.dbf"):
+    def __init__(self, MEDIA_DIR, test_id, testy_dbf_filename="testy.dbf", zestawy_dbf_filename="zestawy.dbf"):
         self.MEDIA_DIR = MEDIA_DIR
+	self.test_id = test_id
+
         self.testy_dbf_filename = testy_dbf_filename
         self.zestawy_dbf_filename = zestawy_dbf_filename
 
-        self.testy_dbf_path = None
-        self.zestawy_dbf_path = None
+        self.testy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.testy_dbf_filename)
+        self.zestawy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.zestawy_dbf_filename)
 
         self.testy_dbf = None
         self.zestawy_dbf = None
@@ -23,12 +25,23 @@ class SaveDBF():
 
         self.saved_questions = set()
 
-    def save_test(self, test_id):
-        self.testy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.testy_dbf_filename)
-        self.zestawy_dbf_path = os.path.join(self.MEDIA_DIR, str(test_id), self.zestawy_dbf_filename)
+    def get_students_list(self):
+        self.open_dbf_files()
+        students = self.read_students()
+        self.close_dbf_files()
+        return students
 
+    def read_students(self):
+        s = []
+        for record in self.testy_dbf:
+            album = int(record['NR_ALBUMU'])
+            if album != 0:
+                s.append(album)
+        return s
+
+    def save_test(self):
         try:
-            self.test = Test.objects.get(id=test_id)
+            self.test = Test.objects.get(id=self.test_id)
         except (Test.DoesNotExist, Test.MultipleObjectsReturned):
             raise Exception("Test ERROR!")
 
