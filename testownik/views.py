@@ -163,9 +163,12 @@ class UploadFileView(View):
         new_test = Test.objects.get(id=testId)
         students = s.get_students_list()
         
-        try:
-            for index in students:
-                student = Student.objects.get(index_number=index)
+        for index in students:
+            try:
+                 student = Student.objects.get(index_number=index)
+            except Student.DoesNotExist:
+                 continue
+            else:
                 sheets = student.sheet_set.all()
                 for a_sheet in sheets:
                     if new_test.start_time > a_sheet.test_id.end_time:
@@ -178,11 +181,8 @@ class UploadFileView(View):
                         print "Test end: %s" % new_test.end_time
                         print "Student start %s: " % a_sheet.test_id.start_time
                         print "Student end %s: " % a_sheet.test_id.end_time
-                        raise Exception
-        except Exception:
-            new_test.delete()
-        else:
-            s.save_test()
+                        raise ValueError
+        s.save_test()
 
     def get_test_name_from_file(self, test_id):
         description_filename = "opisTestu.txt"
