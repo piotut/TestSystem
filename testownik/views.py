@@ -158,8 +158,8 @@ class UploadFileView(View):
 
         os.system('mv --force "'+ matchDir +'"/* "' +dir+'"')
 
-        s = SaveDBF(MEDIA_DIR)
-        s.save_test(testId)
+        s = SaveDBF(MEDIA_DIR, testId)
+        s.save_test()
 
     def get_test_name_from_file(self, test_id):
         description_filename = "opisTestu.txt"
