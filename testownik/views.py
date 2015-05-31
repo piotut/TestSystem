@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 
 from django.views.generic import View, DetailView, ListView
+from django.views.generic.edit import DeleteView
 
 from django.contrib.auth.models import User
 from models import Student, Sheet, SheetQuestions, Test, UserProfile, Room, IP
@@ -45,7 +46,7 @@ class IndexView(View):
                         return render(request, 'testownik/sheet.html', {'msg_points': sheet.points})
                     else:
                         return HttpResponseRedirect(reverse('confirm', args=[sheet.id]))
-            return render(request, 'testownik/error.html', {'error_text': 'Dla studenta o numerze indeksu ' + str(index) + " nie ma aktywnego testu!"})
+                return render(request, 'testownik/error.html', {'error_text': 'Dla studenta o numerze indeksu ' + str(index) + " nie ma aktywnego testu!"})
         return render(request, 'testownik/error.html', {'error_text': 'Niepoprawny numer indeksu!'})
 
 
@@ -158,35 +159,13 @@ class UploadFileView(View):
 
         os.system('mv --force "'+ matchDir +'"/* "' +dir+'"')
 
-        s = SaveDBF(MEDIA_DIR, testId)
-        
-        new_test = Test.objects.get(id=testId)
-        students = s.get_students_list()
-        
-        for index in students:
-            try:
-                 student = Student.objects.get(index_number=index)
-            except Student.DoesNotExist:
-                 continue
-            else:
-                sheets = student.sheet_set.all()
-                for a_sheet in sheets:
-                    if new_test.start_time > a_sheet.test_id.end_time:
-                        pass
-                    elif new_test.end_time < a_sheet.test_id.start_time:
-                        pass
-                    else:
-                        print 'BLAD!!!'
-                        print "Test start: %s" % new_test.start_time
-                        print "Test end: %s" % new_test.end_time
-                        print "Student start %s: " % a_sheet.test_id.start_time
-                        print "Student end %s: " % a_sheet.test_id.end_time
-                        raise ValueError
-        s.save_test()
+        s = SaveDBF(MEDIA_DIR)
+        s.save_test(testId)
 
     def get_test_name_from_file(self, test_id):
         description_filename = "opisTestu.txt"
         description_path = os.path.join(MEDIA_DIR, str(test_id), description_filename)
+        print description_path
         
         with open(description_path, 'r') as description_file:
             lines = description_file.read().splitlines()
@@ -318,3 +297,12 @@ class ConfirmTestStartView(View):
             return render(request, self.template_name, {'sheet': sheet})
         else:
             return render(request, 'testownik/error.html', {'error_text': 'Adres IP, z którego próbujesz się połączyć jest błędny!'})
+
+class DeleteTestView(View):
+    
+    template_name = 'testownik/tests.html'
+
+    def get(self, request, *args):
+        t = Test.objects.get(id=self.args[0])
+        t.delete()
+        return HttpResponseRedirect(reverse('tests'))

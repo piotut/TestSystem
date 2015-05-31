@@ -25,6 +25,7 @@ $(document).ready(function(){
     <td>Sala</td>
     <td>Arkusze</td>
     <td>Edytuj</td>
+    <td>Usun</td>
 </tr>
 {% for test in object_list %}
 <tr>
@@ -35,6 +36,7 @@ $(document).ready(function(){
     <td>{% if test.room %} {{ test.room.name }} {% else %} {% endif %}</td>
     <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
     <td><button id="{{ test.id }}">Edytuj</a></td>
+    <td><a href="{% url 'delete' test.id %}">Usun</a></td>
 </tr>
 <tr id="edit_tr{{ test.id }}"><td>
     <form id="{{ test.id }}"action="{% url 'tests' %}" method="post" enctype="multipart/form-data">
