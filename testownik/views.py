@@ -214,13 +214,16 @@ class UploadFileView(View):
             test.save()
             try:
                 test.room = Room.objects.get(id=form.cleaned_data.get('room'))
-                test.save()
             except:
-                pass
+                test.room = None
+            finally:
+                test.save()
             try:
                 self.handle_uploaded_file(test.id, request.FILES['file'])
             except:
                 test.delete()
+                return render(request, self.template_name, {'form': form, 'msg': 'Wystąpił konflikt terminów. Test nie został dodany'})
+
             else:
                 test.name = self.get_test_name_from_file(test.id)
                 test.save()
@@ -268,10 +271,14 @@ class TestListView(View):
         msg = {'error': u"Wystąpił błąd przy próbie edytowania testu."}
         if form.is_valid():
             try:
+                print '1'
                 t = Test.objects.get(id=request.POST['test_id'])
-                t.start_time = convert_time(form.cleaned_data['start'])
-                t.end_time = convert_time(form.cleaned_data['end'])
-                t.time = form.cleaned_data['time']
+                print t
+                print form.cleaned_data
+                t.start_time = convert_time(form.cleaned_data.get('start') or t.start_time)
+                print t.end_time
+                t.end_time = convert_time(form.cleaned_data.get('end') or t.end_time)
+                t.time = form.cleaned_data.get('time') or t.time
                 t.save()
             except:
                 pass
@@ -280,11 +287,12 @@ class TestListView(View):
             try:
                 t = Test.objects.get(id=request.POST['test_id'])
                 t.room = Room.objects.get(id=form.cleaned_data['room'])
-                t.save()
             except:
-                pass
+                t.room = None
             else:
                 msg = {'correct': u"Zmieniono test: {}".format(t.name)}
+            finally:
+                t.save()
 
             
         tests_list = Test.objects.filter(author_id__user=request.user)

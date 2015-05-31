@@ -123,7 +123,7 @@ class EditTestForm(forms.Form):
     Forma do wyboru pliku.
     '''
     CHOICES = [(r.id, r.name) for r in Room.objects.all()]+[('', 'Brak sali')]
-    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}))
-    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}))
-    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}))
+    start = forms.CharField(label='Data początku',widget=forms.TextInput(attrs={'id': 'start', 'class': "form-control"}), required=False)
+    end = forms.CharField(label='Data końca',widget=forms.TextInput(attrs={'id': 'end', 'class': "form-control"}), required=False)
+    time = forms.CharField(label='Czas testu (min)', widget=forms.TextInput(attrs={'class': "form-control"}), required=False)
     room = forms.ChoiceField(label='Sala', choices=CHOICES, required=False)
