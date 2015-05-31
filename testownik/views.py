@@ -222,7 +222,8 @@ class UploadFileView(View):
                 self.handle_uploaded_file(test.id, request.FILES['file'])
             except:
                 test.delete()
-                return render(request, self.template_name, {'form': form, 'msg': 'Wystąpił konflikt terminów. Test nie został dodany'})
+                msg = {'error': 'Wystąpił konflikt terminów. Test nie został dodany.'}
+                return render(request, self.template_name, {'form': form, 'msg': msg})
 
             else:
                 test.name = self.get_test_name_from_file(test.id)

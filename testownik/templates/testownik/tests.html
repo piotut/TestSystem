@@ -22,6 +22,7 @@ $(document).ready(function(){
     <td>Aktywny</td>
     <td>Czas startu</td>
     <td>Czas końca</td>
+    <td>Czas testu</td>
     <td>Sala</td>
     <td>Arkusze</td>
     <td>Edytuj</td>
@@ -33,16 +34,17 @@ $(document).ready(function(){
     <td>{% if test.is_active %} Tak {% else %} Nie {% endif %}</td>
     <td>{{ test.start_time }}</td>
     <td>{{ test.end_time }}</td>
+    <td>{{ test.time }}</td>
     <td>{% if test.room %} {{ test.room.name }} {% else %} {% endif %}</td>
-    <td><a href="{% url 'sheets' test.id %}">Pokaz</a></td>
-    <td><button id="{{ test.id }}">Edytuj</a></td>
-    <td><a href="{% url 'delete' test.id %}">Usun</a></td>
+    <td><a class="btn btn-sm btn-primary" href="{% url 'sheets' test.id %}">Pokaz</button></td>
+    <td><button class="btn btn-sm btn-success" id="{{ test.id }}">Edytuj</button></td>
+    <td><a class="btn btn-sm btn-danger" href="{% url 'delete' test.id %}">Usun</button></td>
 </tr>
 <tr id="edit_tr{{ test.id }}"><td>
-    <form id="{{ test.id }}"action="{% url 'tests' %}" method="post" enctype="multipart/form-data">
+    <form id="{{ test.id }}" action="{% url 'tests' %}" method="post" enctype="multipart/form-data">
     	{% csrf_token %}
     	{{ form.as_p }} 
-    	<button type="submit" name="test_id" value="{{ test.id }}">Zmień</button>
+    	<button type="submit" class="btn btn-lg btn-block btn-success" name="test_id" value="{{ test.id }}">Zmień</button>
     </form>
     </td>
 </tr>
