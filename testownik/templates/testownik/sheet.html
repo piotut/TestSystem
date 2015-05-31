@@ -16,30 +16,30 @@ text-align: center;
 {% endblock css %}
 
 {% block js%}
-    
-var timeZoneOffsetString = '{{ sheet.start_time|date:"O"}}';
-var timeZoneOffsetStringRefformated = timeZoneOffsetString.substring(0, 3) + ":"+"00";
-var testStartDate = new Date('{{ sheet.start_time|date:"c"}}' + timeZoneOffsetStringRefformated);
-var endDate = new Date(testStartDate.getTime() + {{sheet.test_id.time }}*60000);
-var actualTime = new Date();
-var difference = new Date(endDate - actualTime);
 
-var timeLeft=difference.getTime()/1000;
+var timeLeft=15*60;
 var counter;
 function cut(n){
-    return n > 9 ? "" + n.toFixed(0): "0" + n.toFixed(0);
+    return n > 9 ? "" + n: "0" + n;
 }
 function timer(){
     timeLeft-=1;
-    if(timeLeft<0) { timeLeft=0; }
     document.getElementById("timer").innerHTML = cut(Math.floor(timeLeft/60)) + ":" + cut(timeLeft % 60);
-    if(timeLeft==0)
+    if(timeLeft<=0)
     {
         clearInterval(counter);
         alert("Czas minął! Twoje odpowiedzi zostaną zapisane do bazy");
-        document.getElementById("end_button").click();
+        document.getElementById("post_button").click();
     }
 }
+
+function ask(){
+    if(confirm('Czy na pewno chcesz zakończyć test?'))
+    {
+        document.getElementById("post_button").click();
+    }
+}
+
 {% endblock js%}
 
 
@@ -51,7 +51,6 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
 </div>
 {% else %}
     <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a><h4><b>{{ student.first_name }} {{ student.last_name }}</b></h4></a></li>
@@ -59,6 +58,8 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
                 <li><a><h4><b>{{ student.index_number }}</b></h4></a></li>
 
                 <li><a><h4><b>{{ sheet.test_id.name }}</b></h4></a> </li>
+
+                <li><a href="{% url 'sheets' sheet.test_id.id %}"><h4><b>---Wstecz---</b></h4></a> </li>
             </ul>
             {% if not user.is_authenticated %}
             <ul class="nav navbar-right">
@@ -66,7 +67,6 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
             </ul>
             {% endif %}
         </div><!--/.nav-collapse -->
-    </div>
     </nav>
 <div style="padding-top: 20px">
 <div class="row" style="position:relative;">
@@ -101,10 +101,12 @@ Liczba zdobytych punktów: <b>{{ msg_points }}</b>
 <div id="answerscontainer">
 {{ formset.as_table }} 
 </div>
+
 {{ formset.management_form }}
     <script>counter=setInterval(timer, 1000); </script>
-    <button id="end_button"class="btn btn-danger" type="submit">Zakończ test</button>
+    <button id="post_button"class="btn btn-danger" type="submit" style="display: none;">POST</button>
     </form>
+    <button id="end_button"class="btn btn-danger" onclick="ask()">Zakończ test</button>
 </div>
     {% endif %}
 {% endif %}
