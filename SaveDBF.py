@@ -125,14 +125,29 @@ class SaveDBF():
         return question
 
     def save_question(self, rec_zestawy_dbf):
+        order_dict = {
+            1: 'PUNKTY_A',
+            2: 'PUNKTY_B',
+            3: 'PUNKTY_C',
+            4: 'PUNKTY_D',
+            5: 'PUNKTY_E',
+            6: 'PUNKTY_F',
+        }
+
+        answer_points = [0]*6
+        order = [int(o) for o in rec_zestawy_dbf['KOLEJNOSC']]
+        
+        for nr, answer in enumerate(order, start=1):
+            answer_points[answer-1] = int(rec_zestawy_dbf[order_dict[nr]])
+
         question = Question()
         question.question_number = int(rec_zestawy_dbf['NR_PYTANIA'])
-        question.a_points = int(rec_zestawy_dbf['PUNKTY_A'])
-        question.b_points = int(rec_zestawy_dbf['PUNKTY_B'])
-        question.c_points = int(rec_zestawy_dbf['PUNKTY_C'])
-        question.d_points = int(rec_zestawy_dbf['PUNKTY_D'])
-        question.e_points = int(rec_zestawy_dbf['PUNKTY_E'])
-        question.f_points = int(rec_zestawy_dbf['PUNKTY_F'])
+        question.a_points = answer_points[0]
+        question.b_points = answer_points[1]
+        question.c_points = answer_points[2]
+        question.d_points = answer_points[3]
+        question.e_points = answer_points[4]
+        question.f_points = answer_points[5]
         question.save()
 
         return question
