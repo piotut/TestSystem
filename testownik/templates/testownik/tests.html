@@ -34,6 +34,7 @@ function ask(location){
     <td>Sala</td>
     <td>Arkusze</td>
     <td>Edytuj</td>
+    <td>CSV</td>
     <td>Usuń</td>
 </tr>
 {% for test in object_list %}
@@ -44,8 +45,9 @@ function ask(location){
     <td>{{ test.end_time }}</td>
     <td>{{ test.time }}</td>
     <td>{% if test.room %} {{ test.room.name }} {% else %} {% endif %}</td>
-    <td><a class="btn btm-sm btn-primary" href="{% url 'sheets' test.id %}">Pokaz</a></td>
+    <td><a class="btn btn-sm btn-primary" href="{% url 'sheets' test.id %}">Pokaz</a></td>
     <td><button class="btn btn-sm btn-success" id="{{ test.id }}">Edytuj</a></td>
+    <td><a class="btn btn-sm btn-info" href="{% url 'csv' test.id %}">CSV</a></td>
     <td><a class="btn btn-sm btn-danger" id="askingLink" href="#" onclick="ask('{% url 'delete' test.id %}');return false;">Usuń</a></td>
 </tr>
 <tr id="edit_tr{{ test.id }}"><td>

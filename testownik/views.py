@@ -28,6 +28,8 @@ from SaveDBF import SaveDBF
 from TestResults import TestResults, TestAnswers
 from commons import convert_time
 
+import csv
+
 class IndexView(View):
     '''
     Strona glowna
@@ -338,3 +340,21 @@ class DeleteTestView(View):
         t = Test.objects.get(id=self.args[0])
         t.delete()
         return HttpResponseRedirect(reverse('tests'))
+
+class CSVSheetView(View):
+    def get(self, *args):
+        # Create the HttpResponse object with the appropriate CSV header.
+        sheets = Sheet.objects.filter(test_id__id=self.args[0])
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % sheets[0].test_id.name
+
+        writer = csv.writer(response)
+        writer.writerow(['nr_indeksu', 'imie_i_nazwisko', 'punkty'])
+
+        for s in sheets:
+            index = s.student_id.index_number
+            name = "%s %s" % (s.student_id.first_name, s.student_id.last_name)
+            points = s.points
+            writer.writerow([index, name.encode("utf-8"), points])
+
+        return response
